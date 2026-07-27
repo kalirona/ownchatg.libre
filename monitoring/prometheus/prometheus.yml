@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'librechat-api'
+    static_configs:
+      - targets: ['api:3080']
+    metrics_path: /metrics
+    authorization:
+      credentials: '${METRICS_SECRET}'
+    scheme: http
+
+  - job_name: 'langfuse-fanout'
+    static_configs:
+      - targets: ['langfuse-fanout:4318']
+    metrics_path: /metrics
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']

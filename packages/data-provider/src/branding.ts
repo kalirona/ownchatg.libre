@@ -1,0 +1,11 @@
+export const BRAND_NAME = 'sitenex ai';
+export const BRAND_SHORT_NAME = 'SiteNex';
+export const COMPANY_NAME = 'SiteNex AI';
+export const COPYRIGHT = '\u00A9 2026 Sitenex AI';
+export const SUPPORT_EMAIL = 'support@sitenexai.com';
+export const WEBSITE = 'https://sitenexai.com';
+export const DEFAULT_APP_TITLE = 'sitenex ai';
+export const DEFAULT_META_DESCRIPTION = 'sitenex ai - AI-powered chat platform with support for multiple models, agents, and tools';
+export const THEME_COLOR = '#171717';
+export const HELP_URL = 'https://sitenexai.com/docs';
+export const FOOTER_LINK_TEXT = 'sitenex ai';

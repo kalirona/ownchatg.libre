@@ -1,0 +1,30 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light dark" /><title>Payment Successful</title>
+<style>@media (prefers-color-scheme: dark) { .darkmode { background-color: #212121 !important; } .darkmode p { color: #ffffff !important; } } body { margin:0; padding:0; background-color:#f4f4f5; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }</style>
+</head>
+<body class="darkmode" style="margin:0;padding:0;background-color:#f4f4f5;">
+<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td align="center" style="background-color:#f4f4f5;padding:40px 16px;">
+<table width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:500px;">
+<tr><td style="text-align:center;padding:0 0 20px;">
+<h1 style="color:#16a34a;font-size:28px;font-weight:700;margin:0;">{{appName}}</h1>
+</td></tr>
+<tr><td style="background-color:#ffffff;border-radius:12px;padding:40px 32px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+<div style="text-align:center;margin:0 0 16px;"><span style="font-size:48px;">✅</span></div>
+<h2 style="color:#111827;font-size:20px;font-weight:600;margin:0 0 8px;text-align:center;">Payment Successful</h2>
+<p style="color:#6b7280;font-size:14px;margin:0 0 24px;text-align:center;">Thank you for your payment, {{name}}.</p>
+<table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 24px;">
+<tr><td style="padding:12px 0;border-bottom:1px solid #e5e7eb;"><span style="color:#6b7280;font-size:14px;">Amount</span></td><td style="text-align:right;font-size:14px;font-weight:600;color:#111827;">${{amount}}</td></tr>
+{{#if credits}}<tr><td style="padding:12px 0;border-bottom:1px solid #e5e7eb;"><span style="color:#6b7280;font-size:14px;">Credits Added</span></td><td style="text-align:right;font-size:14px;font-weight:600;color:#16a34a;">+{{credits}}</td></tr>{{/if}}
+<tr><td style="padding:12px 0;border-bottom:1px solid #e5e7eb;"><span style="color:#6b7280;font-size:14px;">Date</span></td><td style="text-align:right;font-size:14px;color:#374151;">{{date}}</td></tr>
+<tr><td style="padding:12px 0;"><span style="color:#6b7280;font-size:14px;">Status</span></td><td style="text-align:right;"><span style="background-color:#dcfce7;color:#16a34a;font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;">Completed</span></td></tr>
+</table>
+<a href="{{actionUrl}}" style="display:block;text-align:center;background-color:#16a34a;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:12px 32px;border-radius:8px;">View Billing History</a>
+</td></tr>
+<tr><td style="padding:24px 16px;text-align:center;">
+<p style="color:#9ca3af;font-size:12px;margin:0 0 4px;">{{appName}} &mdash; AI-powered productivity platform</p>
+<p style="color:#9ca3af;font-size:12px;margin:0;">&copy; {{year}} {{appName}}. All rights reserved.</p>
+</td></tr>
+</table>
+</td></tr></table>
+</body>
+</html>

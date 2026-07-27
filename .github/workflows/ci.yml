@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 20
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  typecheck:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Build shared packages
+        run: |
+          npx turbo run build --filter=@librechat/data-schemas --filter=@librechat/data-provider --filter=@librechat/api
+      - name: TypeCheck client
+        run: npx tsc --noEmit --project client/tsconfig.json
+        continue-on-error: true
+
+  test-api:
+    name: API Tests
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:8.0
+        ports:
+          - 27017:27017
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Build shared packages
+        run: |
+          npx turbo run build --filter=@librechat/data-schemas --filter=@librechat/data-provider --filter=@librechat/api
+      - name: Run API tests
+        working-directory: api
+        run: npx jest --ci --logHeapUsage --forceExit
+        env:
+          NODE_ENV: test
+          MONGO_URI: mongodb://localhost:27017/test
+          JWT_SECRET: test-secret
+          JWT_REFRESH_SECRET: test-refresh-secret
+          CREDS_KEY: test-key-test-key-1234
+          CREDS_IV: test-iv-test-iv-12
+          OPENAI_API_KEY: sk-test
+
+  test-client:
+    name: Client Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Build shared packages
+        run: |
+          npx turbo run build --filter=@librechat/data-schemas --filter=@librechat/data-provider
+      - name: Run client tests
+        working-directory: client
+        run: npx jest --ci --logHeapUsage
+        env:
+          NODE_ENV: test
+
+  build:
+    name: Build All
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Build all packages
+        run: npx turbo run build
+      - name: Upload client build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-dist
+          path: client/dist
+          retention-days: 7
+
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: [lint, test-api, test-client, build]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API image
+        run: docker build -f Dockerfile.multi --target api-build -t librechat-api:${{ github.sha }} .
+      - name: Build client image
+        run: docker build -f Dockerfile.multi --target client-build -t librechat-client:${{ github.sha }} .
