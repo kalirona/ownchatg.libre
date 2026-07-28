@@ -16,9 +16,7 @@ const globalLimiter = rateLimit({
   max: getGlobalRateLimitMax(),
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => {
-    return req.ip || req.connection?.remoteAddress || 'unknown';
-  },
+  validate: { xForwardedForHeader: false },
   handler: (req, res) => {
     res.status(429).json({
       type: 'error',

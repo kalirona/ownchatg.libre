@@ -40,3 +40,8 @@ export * from './Organizations';
 export * from './Branding';
 /* Workflows */
 export * from './Workflows';
+
+/* Re-export hooks needed by useSideNavLinks */
+export { useAgentCapabilities, useGetAgentsConfig } from '../hooks/Agents';
+export { useMCPServerManager } from '../hooks/MCP';
+export { useHasAccess } from '../hooks/Roles';
