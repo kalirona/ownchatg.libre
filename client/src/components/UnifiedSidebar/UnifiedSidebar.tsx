@@ -76,6 +76,37 @@ function RouteSync() {
   return null;
 }
 
+/** Returns false for workspace routes that don't need a secondary panel. */
+function useShowSecondaryPanel(): boolean {
+  const location = useLocation();
+  const path = location.pathname;
+
+  const workspaceRoutes = [
+    '/dashboard',
+    '/images',
+    '/video',
+    '/knowledge',
+    '/marketplace',
+    '/admin',
+    '/workflows',
+    '/profile',
+    '/billing',
+    '/search',
+    '/projects',
+    '/integrations',
+    '/notifications',
+    '/organizations',
+  ];
+
+  for (const route of workspaceRoutes) {
+    if (path === route || path.startsWith(route + '/')) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 function UnifiedSidebar() {
   const localize = useLocalize();
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
@@ -83,6 +114,9 @@ function UnifiedSidebar() {
   const [sidebarWidth, setSidebarWidth] = useState(getInitialWidth);
   const [isResizing, setIsResizing] = useState(false);
   const resizeHandlers = useRef<{ move: (e: MouseEvent) => void; up: () => void } | null>(null);
+
+  const showSecondaryPanel = useShowSecondaryPanel();
+  const canExpand = expanded && showSecondaryPanel;
 
   const links = useUnifiedSidebarLinks();
 
@@ -219,9 +253,9 @@ function UnifiedSidebar() {
         <aside
           className="relative flex h-full flex-shrink-0 overflow-hidden"
           style={{
-            width: expanded ? sidebarWidth : COLLAPSED_WIDTH,
-            minWidth: expanded ? EXPANDED_MIN : COLLAPSED_WIDTH,
-            maxWidth: expanded ? '40%' : COLLAPSED_WIDTH,
+            width: canExpand ? sidebarWidth : COLLAPSED_WIDTH,
+            minWidth: canExpand ? EXPANDED_MIN : COLLAPSED_WIDTH,
+            maxWidth: canExpand ? '40%' : COLLAPSED_WIDTH,
             transition: isResizing
               ? 'none'
               : `width ${TRANSITION_MS}ms ${EASING}, min-width ${TRANSITION_MS}ms ${EASING}, max-width ${TRANSITION_MS}ms ${EASING}`,
@@ -231,6 +265,7 @@ function UnifiedSidebar() {
           <Sidebar
             links={links}
             expanded={expanded}
+            showSecondaryPanel={showSecondaryPanel}
             onCollapse={handleCollapse}
             onExpand={handleExpand}
             onResizeStart={handleResizeStart}

@@ -6,6 +6,7 @@ import ExpandedPanel from './ExpandedPanel';
 function Sidebar({
   links,
   expanded,
+  showSecondaryPanel,
   onCollapse,
   onExpand,
   onResizeStart,
@@ -13,6 +14,7 @@ function Sidebar({
 }: {
   links: NavLink[];
   expanded: boolean;
+  showSecondaryPanel: boolean;
   onCollapse: () => void;
   onExpand: () => void;
   onResizeStart: (e: React.MouseEvent) => void;
@@ -27,13 +29,13 @@ function Sidebar({
           onCollapse={onCollapse}
           onExpand={onExpand}
         />
-        {expanded && (
+        {expanded && showSecondaryPanel && (
           <nav className="min-h-0 flex-1 overflow-hidden bg-surface-primary-alt">
             <SidePanelNav links={links} />
           </nav>
         )}
       </div>
-      {expanded && (
+      {expanded && showSecondaryPanel && (
         <div
           role="separator"
           aria-orientation="vertical"

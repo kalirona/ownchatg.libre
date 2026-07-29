@@ -121,8 +121,10 @@ const NavIconButton = memo(function NavIconButton({
           aria-pressed={isActive}
           data-testid={`nav-panel-${link.id}`}
           className={cn(
-            'flex h-9 w-full items-center justify-start gap-3 rounded-lg px-3',
-            isActive ? 'bg-surface-active-alt text-text-primary' : 'text-text-secondary',
+            'flex h-9 w-full items-center justify-start gap-3 rounded-lg px-3 border-l-2',
+            isActive
+              ? 'border-accent bg-surface-active-alt text-text-primary'
+              : 'border-transparent text-text-secondary',
           )}
           onClick={handleClick}
         >
