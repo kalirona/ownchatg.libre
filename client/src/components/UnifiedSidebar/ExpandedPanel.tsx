@@ -60,10 +60,11 @@ const NewChatButton = memo(function NewChatButton({
           data-testid="new-chat-button"
           aria-label={localize('com_ui_new_chat')}
           aria-keyshortcuts={ariaKey}
-          className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-surface-hover"
+          className="flex w-full items-center justify-start gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-surface-hover"
           onClick={handleClick}
         >
-          <SquarePen className="h-5 w-5 text-text-primary" />
+          <SquarePen className="h-5 w-5 flex-shrink-0 text-text-primary" />
+          <span className="text-sm">{localize('com_ui_new_chat')}</span>
         </a>
       }
     />
@@ -119,12 +120,13 @@ const NavIconButton = memo(function NavIconButton({
           aria-pressed={isActive}
           data-testid={`nav-panel-${link.id}`}
           className={cn(
-            'h-9 w-9 rounded-lg',
+            'flex h-9 w-full items-center justify-start gap-3 rounded-lg px-3',
             isActive ? 'bg-surface-active-alt text-text-primary' : 'text-text-secondary',
           )}
           onClick={handleClick}
         >
-          <link.icon className="h-5 w-5" aria-hidden="true" />
+          <link.icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+          <span className="text-sm">{localize(link.title)}</span>
         </Button>
       }
     />
@@ -175,7 +177,7 @@ function ExpandedPanel({
   }, [links]);
 
   return (
-    <div className="flex h-full flex-shrink-0 flex-col gap-2 border-r border-border-light bg-surface-primary-alt px-2 py-2">
+    <div className="flex h-full flex-shrink-0 flex-col gap-1 border-r border-border-light bg-surface-primary-alt px-3 py-3">
       <TooltipAnchor
         side="right"
         description={toggleSidebarHint}
@@ -188,10 +190,11 @@ function ExpandedPanel({
             aria-label={localize(toggleLabel)}
             aria-expanded={expanded}
             aria-keyshortcuts={toggleSidebarAriaKey}
-            className="h-9 w-9 rounded-lg"
+            className="flex h-9 w-full items-center justify-start gap-3 rounded-lg px-3"
             onClick={toggleClick}
           >
-            <Sidebar aria-hidden="true" className="h-5 w-5 text-text-primary" />
+            <Sidebar aria-hidden="true" className="h-5 w-5 flex-shrink-0 text-text-primary" />
+            <span className="text-sm">{localize(toggleLabel)}</span>
           </Button>
         }
       />
@@ -200,12 +203,12 @@ function ExpandedPanel({
       <div className="flex flex-col overflow-y-auto">
         {sectionedLinks.map((group, groupIdx) => (
           <div key={group.section ?? `unsectioned-${groupIdx}`} className="flex flex-col">
-            {groupIdx > 0 && (
-              <TooltipAnchor
-                side="right"
-                description={group.section ? localize(SECTION_LABELS[group.section]) : ''}
-                render={<div className="mx-2 my-1 border-t border-border-light" />}
-              />
+            {group.section && groupIdx > 0 && (
+              <div className="px-3 py-1">
+                <span className="text-xs font-medium uppercase tracking-wider text-text-secondary">
+                  {localize(SECTION_LABELS[group.section])}
+                </span>
+              </div>
             )}
             <div className="flex flex-col gap-1">
               {group.items.map((link) => (
@@ -225,8 +228,8 @@ function ExpandedPanel({
       </div>
 
       <div className="mt-auto">
-        <Suspense fallback={<Skeleton className="h-9 w-9 rounded-lg" />}>
-          <AccountSettings collapsed />
+        <Suspense fallback={<Skeleton className="h-9 w-full rounded-lg" />}>
+          <AccountSettings collapsed={false} />
         </Suspense>
       </div>
     </div>
