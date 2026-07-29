@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { useRecoilState } from 'recoil';
 import { useForm } from 'react-hook-form';
 import { useMediaQuery } from '@librechat/client';
+import { useLocation } from 'react-router-dom';
 import type { ChatFormValues } from '~/common';
 import { ChatContext, ChatFormProvider, ActivePanelProvider } from '~/Providers';
 import useUnifiedSidebarLinks from '~/hooks/Nav/useUnifiedSidebarLinks';
@@ -37,6 +38,42 @@ function SidebarChatProvider({ children }: { children: ReactNode }) {
       <ChatContext.Provider value={chatHelpers}>{children}</ChatContext.Provider>
     </ChatFormProvider>
   );
+}
+
+/** Synchronizes ActivePanel state with the current route. */
+function RouteSync() {
+  const location = useLocation();
+  const { setActive } = useActivePanel();
+
+  useEffect(() => {
+    const routePanelMap: Record<string, string> = {
+      '/dashboard': 'dashboard',
+      '/images': 'image-gen',
+      '/video': 'video-gen',
+      '/knowledge': 'knowledge',
+      '/marketplace': 'marketplace',
+      '/admin': 'admin',
+      '/workflows': 'workflows',
+      '/profile': 'profile',
+      '/billing': 'billing',
+    };
+
+    const path = location.pathname;
+
+    for (const [route, panelId] of Object.entries(routePanelMap)) {
+      if (path === route || path.startsWith(route + '/')) {
+        setActive(panelId);
+        return;
+      }
+    }
+
+    if (path.startsWith('/agents/')) {
+      setActive('assistant-builder');
+      return;
+    }
+  }, [location.pathname, setActive]);
+
+  return null;
 }
 
 function UnifiedSidebar() {
@@ -148,6 +185,7 @@ function UnifiedSidebar() {
         >
           <SidebarChatProvider>
             <ActivePanelProvider>
+              <RouteSync />
               <ExpandedPanel links={links} onCollapse={handleCollapse} />
               <nav className="min-h-0 flex-1 overflow-hidden bg-surface-primary-alt">
                 <SidePanelNav links={links} />
@@ -177,6 +215,7 @@ function UnifiedSidebar() {
   return (
     <SidebarChatProvider>
       <ActivePanelProvider>
+        <RouteSync />
         <aside
           className="relative flex h-full flex-shrink-0 overflow-hidden"
           style={{

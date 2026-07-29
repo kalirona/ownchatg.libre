@@ -91,6 +91,7 @@ const NavIconButton = memo(function NavIconButton({
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       if (link.onClick) {
+        setActive(link.id);
         link.onClick(e);
         return;
       }
