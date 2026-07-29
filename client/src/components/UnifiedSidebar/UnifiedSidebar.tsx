@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useMediaQuery } from '@librechat/client';
 import { useLocation } from 'react-router-dom';
 import type { ChatFormValues } from '~/common';
-import { ChatContext, ChatFormProvider, ActivePanelProvider } from '~/Providers';
+import { ChatContext, ChatFormProvider, ActivePanelProvider, useActivePanel } from '~/Providers';
 import useUnifiedSidebarLinks from '~/hooks/Nav/useUnifiedSidebarLinks';
 import { useChatHelpers, useLocalize } from '~/hooks';
 import SidePanelNav from '~/components/SidePanel/Nav';
