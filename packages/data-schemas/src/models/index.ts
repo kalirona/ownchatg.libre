@@ -40,6 +40,13 @@ import { createUserModel } from './user';
 import { createRoleModel } from './role';
 import { createFileModel } from './file';
 import { createKeyModel } from './key';
+import { createAIProviderModel } from './aiProvider';
+import { createProviderModelModel } from './providerModel';
+import { createProviderKeyModel } from './providerKey';
+import { createRoutingRuleModel } from './routingRule';
+import { createProviderUsageModel } from './providerUsage';
+import { createProviderHealthLogModel } from './providerHealth';
+import { createSystemDefaultsModel } from './systemDefaults';
 
 /**
  * Creates all database models for all collections
@@ -87,6 +94,13 @@ export function createModels(mongoose: typeof import('mongoose')): {
   WebhookEvent: ReturnType<typeof createWebhookEventModel>;
   Group: ReturnType<typeof createGroupModel>;
   Config: ReturnType<typeof createConfigModel>;
+  AIProvider: ReturnType<typeof createAIProviderModel>;
+  ProviderModel: ReturnType<typeof createProviderModelModel>;
+  ProviderKey: ReturnType<typeof createProviderKeyModel>;
+  RoutingRule: ReturnType<typeof createRoutingRuleModel>;
+  ProviderUsage: ReturnType<typeof createProviderUsageModel>;
+  ProviderHealthLog: ReturnType<typeof createProviderHealthLogModel>;
+  SystemDefaults: ReturnType<typeof createSystemDefaultsModel>;
 } {
   return {
     User: createUserModel(mongoose),
@@ -131,5 +145,12 @@ export function createModels(mongoose: typeof import('mongoose')): {
     WebhookEvent: createWebhookEventModel(mongoose),
     Group: createGroupModel(mongoose),
     Config: createConfigModel(mongoose),
+    AIProvider: createAIProviderModel(mongoose),
+    ProviderModel: createProviderModelModel(mongoose),
+    ProviderKey: createProviderKeyModel(mongoose),
+    RoutingRule: createRoutingRuleModel(mongoose),
+    ProviderUsage: createProviderUsageModel(mongoose),
+    ProviderHealthLog: createProviderHealthLogModel(mongoose),
+    SystemDefaults: createSystemDefaultsModel(mongoose),
   };
 }

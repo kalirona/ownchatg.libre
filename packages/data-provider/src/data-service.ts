@@ -14,6 +14,8 @@ import * as config from './config';
 import request from './request';
 import * as s from './schemas';
 import * as r from './roles';
+import * as prov from './types/providers';
+import * as media from './types/media';
 
 export function revokeUserKey(name: string): Promise<unknown> {
   return request.delete(endpoints.revokeUserKey(name));
@@ -1562,6 +1564,84 @@ export function knowledgeChat(
   return request.post(endpoints.knowledgeChat(), payload);
 }
 
+export function getKnowledgeDocumentDetail(id: string): Promise<{ document: t.TKnowledgeDocumentDetail }> {
+  return request.get(endpoints.knowledgeDocumentDetail(id));
+}
+
+export function renameKnowledgeDocument(id: string, name: string): Promise<{ document: t.TKnowledgeDocument }> {
+  return request.put(endpoints.knowledgeDocumentRename(id), { name });
+}
+
+export function reindexKnowledgeDocument(id: string): Promise<{ document: t.TKnowledgeDocument }> {
+  return request.post(endpoints.knowledgeDocumentReindex(id));
+}
+
+export function moveKnowledgeDocument(id: string, collectionId: string | null): Promise<{ document: t.TKnowledgeDocument }> {
+  return request.post(endpoints.knowledgeDocumentMove(id), { collectionId });
+}
+
+export function getKnowledgeCollectionAnalytics(id: string): Promise<{ analytics: t.TKnowledgeCollectionAnalytics }> {
+  return request.get(endpoints.knowledgeCollectionAnalytics(id));
+}
+
+export function quickKnowledgeAction(
+  payload: { fileIds: string[]; action: t.TKnowledgeQuickAction },
+): Promise<{ answer: string; sources: t.TKnowledgeSource[] }> {
+  return request.post(endpoints.knowledgeQuickAction(), payload);
+}
+
+export function getKnowledgeAdminSettings(): Promise<{ settings: t.TKnowledgeAdminSettings }> {
+  return request.get(endpoints.knowledgeAdminSettings());
+}
+
+export function updateKnowledgeAdminSettings(
+  payload: Partial<t.TKnowledgeAdminSettings>,
+): Promise<{ settings: t.TKnowledgeAdminSettings }> {
+  return request.put(endpoints.knowledgeAdminSettings(), payload);
+}
+
+/* Import / Background Processing Jobs */
+export function uploadKnowledgeDocumentAsync(formData: FormData): Promise<t.TImportJobResponse> {
+  return request.postMultiPart(endpoints.knowledgeUploadAsync(), formData);
+}
+
+export function getKnowledgeImportJobs(
+  params?: { status?: string; sourceType?: string; collectionId?: string; limit?: number; offset?: number },
+): Promise<t.TImportJobListResponse> {
+  const query = new URLSearchParams();
+  if (params?.status) query.set('status', params.status);
+  if (params?.sourceType) query.set('sourceType', params.sourceType);
+  if (params?.collectionId) query.set('collectionId', params.collectionId);
+  if (params?.limit) query.set('limit', String(params.limit));
+  if (params?.offset) query.set('offset', String(params.offset));
+  const qs = query.toString();
+  return request.get(`${endpoints.knowledgeImportJobs()}${qs ? `?${qs}` : ''}`);
+}
+
+export function getKnowledgeImportJob(id: string): Promise<t.TImportJobResponse> {
+  return request.get(endpoints.knowledgeImportJob(id));
+}
+
+export function cancelKnowledgeImportJob(id: string): Promise<t.TImportJobResponse> {
+  return request.post(endpoints.knowledgeImportJobCancel(id));
+}
+
+export function retryKnowledgeImportJob(id: string): Promise<t.TImportJobResponse> {
+  return request.post(endpoints.knowledgeImportJobRetry(id));
+}
+
+export function reindexKnowledgeCollectionAsync(id: string): Promise<t.TImportJobResponse> {
+  return request.post(endpoints.knowledgeCollectionReindex(id));
+}
+
+export function getKnowledgeAdminQueueStatus(): Promise<{
+  available: boolean;
+  queues?: Record<string, { name: string; waiting: number; active: number; completed: number; failed: number; delayed: number; paused: boolean }>;
+  message?: string;
+}> {
+  return request.get(endpoints.knowledgeAdminQueueStatus());
+}
+
 /* Prompt Marketplace */
 export function getMarketplacePrompts(
   params?: { search?: string; category?: string; sort?: string; page?: number },
@@ -2301,4 +2381,197 @@ export function getAgentMarketplaceRevenue(
 
 export function getAgentMarketplaceCreatorProfile(userId: string): Promise<t.TCreatorProfile> {
   return request.get(endpoints.agentMarketplaceCreatorProfile(userId));
+}
+
+/* ── Provider Management (AI Infrastructure) ─────────────────────────── */
+
+export function getProviderOverview(): Promise<prov.TProviderOverview> {
+  return request.get(endpoints.adminAiProviderOverview());
+}
+
+export function getProvidersList(category?: string): Promise<prov.TAIProvider[]> {
+  const params = category ? { category } : undefined;
+  return request.get(endpoints.adminAiProviders(), { params });
+}
+
+export function getProviderById(id: string): Promise<prov.TAIProvider> {
+  return request.get(endpoints.adminAiProviderById(id));
+}
+
+export function createProvider(data: Partial<prov.TAIProvider>): Promise<prov.TAIProvider> {
+  return request.post(endpoints.adminAiProviders(), data);
+}
+
+export function updateProvider(id: string, data: Partial<prov.TAIProvider>): Promise<prov.TAIProvider> {
+  return request.put(endpoints.adminAiProviderById(id), data);
+}
+
+export function deleteProvider(id: string): Promise<{ success: boolean }> {
+  return request.delete(endpoints.adminAiProviderById(id));
+}
+
+export function getProviderKeys(providerId: string): Promise<prov.TProviderKey[]> {
+  return request.get(endpoints.adminAiProviderKeys(providerId));
+}
+
+export function createProviderKey(providerId: string, data: prov.TProviderKeyCreate): Promise<prov.TProviderKey> {
+  return request.post(endpoints.adminAiProviderKeys(providerId), data);
+}
+
+export function testProviderKey(keyId: string): Promise<{ healthy: boolean; latencyMs: number; errorMessage?: string }> {
+  return request.post(endpoints.adminAiProviderKeyTest(keyId));
+}
+
+export function deleteProviderKey(keyId: string): Promise<{ success: boolean }> {
+  return request.delete(endpoints.adminAiProviderKeyById(keyId));
+}
+
+export function getProviderModels(providerId: string): Promise<prov.TProviderModel[]> {
+  return request.get(endpoints.adminAiProviderModels(providerId));
+}
+
+export function createProviderModel(providerId: string, data: Partial<prov.TProviderModel>): Promise<prov.TProviderModel> {
+  return request.post(endpoints.adminAiProviderModels(providerId), data);
+}
+
+export function updateProviderModel(modelId: string, data: Partial<prov.TProviderModel>): Promise<prov.TProviderModel> {
+  return request.put(endpoints.adminAiProviderModelById(modelId), data);
+}
+
+export function deleteProviderModel(modelId: string): Promise<{ success: boolean }> {
+  return request.delete(endpoints.adminAiProviderModelById(modelId));
+}
+
+export function getRoutingRules(category?: string): Promise<prov.TRoutingRule[]> {
+  const params = category ? { category } : undefined;
+  return request.get(endpoints.adminAiRoutingRules(), { params });
+}
+
+export function createRoutingRule(data: Partial<prov.TRoutingRule>): Promise<prov.TRoutingRule> {
+  return request.post(endpoints.adminAiRoutingRules(), data);
+}
+
+export function updateRoutingRule(id: string, data: Partial<prov.TRoutingRule>): Promise<prov.TRoutingRule> {
+  return request.put(endpoints.adminAiRoutingRuleById(id), data);
+}
+
+export function deleteRoutingRule(id: string): Promise<{ success: boolean }> {
+  return request.delete(endpoints.adminAiRoutingRuleById(id));
+}
+
+export function getProviderUsage(providerId?: string, days?: number): Promise<prov.TProviderUsage[]> {
+  const params: Record<string, any> = {};
+  if (providerId) { params.providerId = providerId; }
+  if (days) { params.days = days; }
+  return request.get(endpoints.adminAiProviderUsage(), { params });
+}
+
+export function getProviderCosts(days?: number): Promise<prov.TProviderCostSummary[]> {
+  const params = days ? { days } : undefined;
+  return request.get(endpoints.adminAiProviderCosts(), { params });
+}
+
+export function getProviderHealthHistory(providerId: string, days?: number): Promise<prov.TProviderHealthEntry[]> {
+  const params = days ? { days } : undefined;
+  return request.get(endpoints.adminAiProviderHealthHistory(providerId), { params });
+}
+
+export function getSystemDefaults(): Promise<prov.TSystemDefault[]> {
+  return request.get(endpoints.adminAiSystemDefaults());
+}
+
+export function upsertSystemDefault(data: prov.TSystemDefault): Promise<prov.TSystemDefault> {
+  return request.put(endpoints.adminAiSystemDefaults(), data);
+}
+
+/* ── Media (Image/Video unified) ─────────────────────────────────────── */
+
+export function getMediaPresets(): Promise<media.MediaPreset[]> {
+  return request.get(endpoints.mediaPresets());
+}
+
+export function getMediaCreditCosts(): Promise<Record<string, media.CreditCost>> {
+  return request.get(endpoints.mediaCreditCosts());
+}
+
+export function generateMedia(type: string, payload: media.ImageGenerationRequest | media.VideoGenerationRequest): Promise<{ images?: media.MediaResultImage[]; videos?: media.MediaResultVideo[]; historyId: string; status: string }> {
+  return request.post(endpoints.mediaGenerate(type), payload);
+}
+
+export function getMediaHistory(params?: { page?: number; limit?: number; type?: string; favorite?: string; search?: string }): Promise<media.MediaHistoryResponse> {
+  const query = new URLSearchParams();
+  if (params?.page) query.set('page', String(params.page));
+  if (params?.limit) query.set('limit', String(params.limit));
+  if (params?.type) query.set('type', params.type);
+  if (params?.favorite) query.set('favorite', params.favorite);
+  if (params?.search) query.set('search', params.search);
+  const qs = query.toString();
+  return request.get(`${endpoints.mediaHistory()}${qs ? `?${qs}` : ''}`);
+}
+
+export function deleteMediaHistoryEntry(id: string): Promise<{ message: string }> {
+  return request.delete(endpoints.mediaHistoryEntry(id));
+}
+
+export function toggleMediaFavorite(id: string): Promise<{ favorite: boolean }> {
+  return request.patch(endpoints.mediaToggleFavorite(id));
+}
+
+export function retryMediaGeneration(id: string): Promise<media.MediaHistoryEntry> {
+  return request.post(endpoints.mediaRetry(id));
+}
+
+export function cancelMediaGeneration(id: string): Promise<{ message: string }> {
+  return request.post(endpoints.mediaCancel(id));
+}
+
+export function upscaleImage(historyId: string, imageId: string): Promise<{ filepath: string; fileId: string }> {
+  return request.post(endpoints.imageGenUpscale(historyId), { imageId });
+}
+
+export function removeImageBackground(historyId: string, imageId: string): Promise<{ filepath: string; fileId: string }> {
+  return request.post(endpoints.imageGenRemoveBg(historyId), { imageId });
+}
+
+export function createImageVariations(historyId: string, imageId: string): Promise<{ images: media.MediaResultImage[] }> {
+  return request.post(endpoints.imageGenVariations(historyId), { imageId });
+}
+
+/* ── Admin Media Models ──────────────────────────────────────────────── */
+
+export function getAdminMediaModels(type?: string): Promise<media.AdminMediaModel[]> {
+  return request.get(endpoints.adminMediaModels(type));
+}
+
+export function createAdminMediaModel(data: Partial<media.AdminMediaModel>): Promise<media.AdminMediaModel> {
+  return request.post(endpoints.adminMediaModels(), data);
+}
+
+export function updateAdminMediaModel(id: string, data: Partial<media.AdminMediaModel>): Promise<media.AdminMediaModel> {
+  return request.put(endpoints.adminMediaModelById(id), data);
+}
+
+export function deleteAdminMediaModel(id: string): Promise<{ success: boolean }> {
+  return request.delete(endpoints.adminMediaModelById(id));
+}
+
+export function getAdminMediaRoutingRules(type?: string): Promise<media.MediaRoutingRule[]> {
+  const params = type ? { type } : undefined;
+  return request.get(endpoints.adminMediaRoutingRules(), { params });
+}
+
+export function createAdminMediaRoutingRule(data: Partial<media.MediaRoutingRule>): Promise<media.MediaRoutingRule> {
+  return request.post(endpoints.adminMediaRoutingRules(), data);
+}
+
+export function updateAdminMediaRoutingRule(id: string, data: Partial<media.MediaRoutingRule>): Promise<media.MediaRoutingRule> {
+  return request.put(endpoints.adminMediaRoutingRuleById(id), data);
+}
+
+export function deleteAdminMediaRoutingRule(id: string): Promise<{ success: boolean }> {
+  return request.delete(endpoints.adminMediaRoutingRuleById(id));
+}
+
+export function getAdminMediaAnalytics(): Promise<media.MediaAnalytics> {
+  return request.get(endpoints.adminMediaAnalytics());
 }

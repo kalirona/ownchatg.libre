@@ -29,6 +29,7 @@ import KnowledgeWorkspace from '~/components/Knowledge/KnowledgeWorkspace';
 import MarketplacePage from '~/components/Marketplace/MarketplacePage';
 import AssistantBuilder from '~/components/AssistantBuilder/AssistantBuilder';
 import AdminDashboard from '~/components/Admin/AdminDashboard';
+import ProviderManagement from '~/components/Admin/ProviderManagement/ProviderManagement';
 import IntegrationSettings from '~/components/Integrations/IntegrationSettings';
 import NotificationPreferencePanel from '~/components/Notifications/NotificationPreferencePanel';
 import OrganizationList from '~/components/Organizations/OrganizationList';
@@ -265,6 +266,10 @@ export const router = createBrowserRouter(
             {
               path: 'admin',
               element: <AdminDashboard />,
+            },
+            {
+              path: 'admin/providers',
+              element: <ProviderManagement />,
             },
             {
               path: 'integrations',

@@ -7,11 +7,11 @@ const FileDashboardView = () => {
   const params = useParams();
   const navigate = useNavigate();
   return (
-    <div className="bg-[#f9f9f9] p-0 lg:p-7">
-      <div className="ml-3 mt-3 flex flex-row justify-between">
+    <div className="flex flex-col gap-4 p-4 lg:p-7">
+      <div className="flex flex-row items-center justify-between">
         {params.vectorStoreId && (
           <Button
-            className="block lg:hidden"
+            className="lg:hidden"
             variant={'outline'}
             size={'sm'}
             onClick={() => {
@@ -22,11 +22,11 @@ const FileDashboardView = () => {
           </Button>
         )}
       </div>
-      <div className="flex h-screen max-w-full flex-row divide-x bg-[#f9f9f9]">
-        <div className={`w-full lg:w-1/3 ${params.vectorStoreId ? 'hidden lg:block' : ''}`}>
+      <div className="flex flex-1 flex-col divide-y lg:flex-row lg:divide-x lg:divide-y-0">
+        <div className={`flex-1 lg:w-1/3 ${params.vectorStoreId ? 'hidden lg:flex' : 'flex'}`}>
           <VectorStoreSidePanel />
         </div>
-        <div className={`w-full lg:w-2/3 ${params.vectorStoreId ? '' : 'hidden lg:block'}`}>
+        <div className={`flex-1 lg:w-2/3 ${params.vectorStoreId ? 'flex' : 'hidden lg:flex'}`}>
           <div className="m-2 overflow-x-auto">
             <Outlet />
           </div>

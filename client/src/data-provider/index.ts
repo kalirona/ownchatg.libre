@@ -24,6 +24,8 @@ export * from './SSE';
 export * from './ImageGen';
 /* Video Generation */
 export * from './VideoGen';
+/* Media (shared) */
+export * from './Media';
 /* Knowledge / RAG Workspace */
 export * from './Knowledge';
 /* Prompt Marketplace */

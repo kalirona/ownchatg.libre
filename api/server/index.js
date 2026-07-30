@@ -43,6 +43,7 @@ const sentryService = require('./services/SentryService');
 const posthogService = require('./services/PostHogService');
 const providerHealthService = require('./services/ProviderHealthService');
 const queueMonitor = require('./services/QueueMonitorService');
+const SSEService = require('./services/SSEService');
 const { capabilityContextMiddleware } = require('./middleware/roles/capabilities');
 const createValidateImageRequest = require('./middleware/validateImageRequest');
 const { startExpiredFileSweep } = require('./services/Files/process');
@@ -343,6 +344,7 @@ const startServer = async () => {
   app.use('/api/admin/monitoring', routes.adminMonitoring);
   app.use('/api/admin/queues', routes.adminQueueMonitor);
   app.use('/api/admin/providers', routes.adminProviderHealth);
+  app.use('/api/admin/providers/manage', routes.adminProvidersRouter);
   app.use('/api/actions', routes.actions);
   app.use('/api/keys', routes.keys);
   app.use('/api/api-keys', routes.apiKeys);
@@ -376,6 +378,8 @@ const startServer = async () => {
   app.use('/api/billing', routes.billing);
   app.use('/api/images', routes.imageGen);
   app.use('/api/video', routes.videoGen);
+  app.use('/api/media', routes.media);
+  app.use('/api/admin/media', routes.adminMedia);
   app.use('/api/knowledge', await routes.knowledge.initialize());
   app.use('/api/marketplace', routes.marketplace);
   app.use('/api/notifications', routes.notifications);
@@ -447,6 +451,8 @@ const startServer = async () => {
       if (isEnabled(process.env.PROVIDER_HEALTH_ENABLED)) {
         providerHealthService.startPeriodicChecks();
       }
+
+      SSEService.startListening();
 
       if (isEnabled(process.env.QUEUE_MONITORING_ENABLED)) {
         queueMonitor.startPolling();

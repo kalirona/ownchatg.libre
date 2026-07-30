@@ -4,19 +4,24 @@ import { useLocalize } from '~/hooks';
 
 type ActionButtonProps = {
   onClick: () => void;
+  loading?: boolean;
+  variant?: 'default' | 'outline' | 'ghost' | 'destructive';
 };
 
-export default function ActionButton({ onClick }: ActionButtonProps) {
+export default function ActionButton({
+  onClick,
+  loading,
+  variant = 'outline',
+}: ActionButtonProps) {
   const localize = useLocalize();
   return (
-    <div className="w-32">
-      <Button
-        className="w-full rounded-md border border-black bg-white p-0 text-black hover:bg-black hover:text-white"
-        onClick={onClick}
-      >
-        {/* Action Button */}
-        {localize('com_ui_action_button')}
-      </Button>
-    </div>
+    <Button
+      variant={variant}
+      className="w-full justify-start gap-2"
+      onClick={onClick}
+      loading={loading}
+    >
+      {localize('com_ui_action_button')}
+    </Button>
   );
 }

@@ -45,3 +45,5 @@ export * from './web';
 export * from './mcp';
 /* Billing */
 export * from './billing';
+/* Provider Management */
+export * from './provider';

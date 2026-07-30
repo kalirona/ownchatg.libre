@@ -15,6 +15,7 @@ import * as q from '../types/queries';
 import { QueryKeys, MutationKeys } from '../keys';
 import * as s from '../schemas';
 import * as t from '../types';
+import * as prov from '../types/providers';
 
 export { hasPermissions } from '../accessPermissions';
 
@@ -771,6 +772,336 @@ export const useToggleVideoGenFavoriteMutation = (): UseMutationResult<
     {
       onSuccess: () => {
         queryClient.invalidateQueries([QueryKeys.videoGenHistory]);
+      },
+    },
+  );
+};
+
+/* ── Provider Management (AI Infrastructure) ─────────────────────────── */
+
+export const useGetProviderOverview = (
+  config?: UseQueryOptions<prov.TProviderOverview>,
+): QueryObserverResult<prov.TProviderOverview> => {
+  return useQuery<prov.TProviderOverview>(
+    [QueryKeys.providerOverview],
+    () => dataService.getProviderOverview(),
+    { ...config },
+  );
+};
+
+export const useGetProvidersList = (
+  category?: string,
+  config?: UseQueryOptions<prov.TAIProvider[]>,
+): QueryObserverResult<prov.TAIProvider[]> => {
+  return useQuery<prov.TAIProvider[]>(
+    [QueryKeys.providersList, category],
+    () => dataService.getProvidersList(category),
+    { ...config },
+  );
+};
+
+export const useGetProviderById = (
+  id: string,
+  config?: UseQueryOptions<prov.TAIProvider>,
+): QueryObserverResult<prov.TAIProvider> => {
+  return useQuery<prov.TAIProvider>(
+    [QueryKeys.providerDetail, id],
+    () => dataService.getProviderById(id),
+    { enabled: !!id, ...config },
+  );
+};
+
+export const useGetProviderKeys = (
+  providerId: string,
+  config?: UseQueryOptions<prov.TProviderKey[]>,
+): QueryObserverResult<prov.TProviderKey[]> => {
+  return useQuery<prov.TProviderKey[]>(
+    [QueryKeys.providerKeys, providerId],
+    () => dataService.getProviderKeys(providerId),
+    { enabled: !!providerId, ...config },
+  );
+};
+
+export const useGetProviderModels = (
+  providerId: string,
+  config?: UseQueryOptions<prov.TProviderModel[]>,
+): QueryObserverResult<prov.TProviderModel[]> => {
+  return useQuery<prov.TProviderModel[]>(
+    [QueryKeys.providerModels, providerId],
+    () => dataService.getProviderModels(providerId),
+    { enabled: !!providerId, ...config },
+  );
+};
+
+export const useGetRoutingRules = (
+  category?: string,
+  config?: UseQueryOptions<prov.TRoutingRule[]>,
+): QueryObserverResult<prov.TRoutingRule[]> => {
+  return useQuery<prov.TRoutingRule[]>(
+    [QueryKeys.routingRules, category],
+    () => dataService.getRoutingRules(category),
+    { ...config },
+  );
+};
+
+export const useGetProviderUsage = (
+  providerId?: string,
+  days?: number,
+  config?: UseQueryOptions<prov.TProviderUsage[]>,
+): QueryObserverResult<prov.TProviderUsage[]> => {
+  return useQuery<prov.TProviderUsage[]>(
+    [QueryKeys.providerUsage, providerId, days],
+    () => dataService.getProviderUsage(providerId, days),
+    { ...config },
+  );
+};
+
+export const useGetProviderCosts = (
+  days?: number,
+  config?: UseQueryOptions<prov.TProviderCostSummary[]>,
+): QueryObserverResult<prov.TProviderCostSummary[]> => {
+  return useQuery<prov.TProviderCostSummary[]>(
+    [QueryKeys.providerCosts, days],
+    () => dataService.getProviderCosts(days),
+    { ...config },
+  );
+};
+
+export const useGetProviderHealthHistory = (
+  providerId: string,
+  days?: number,
+  config?: UseQueryOptions<prov.TProviderHealthEntry[]>,
+): QueryObserverResult<prov.TProviderHealthEntry[]> => {
+  return useQuery<prov.TProviderHealthEntry[]>(
+    [QueryKeys.providerHealthHistory, providerId, days],
+    () => dataService.getProviderHealthHistory(providerId, days),
+    { enabled: !!providerId, ...config },
+  );
+};
+
+export const useGetSystemDefaults = (
+  config?: UseQueryOptions<prov.TSystemDefault[]>,
+): QueryObserverResult<prov.TSystemDefault[]> => {
+  return useQuery<prov.TSystemDefault[]>(
+    [QueryKeys.systemDefaults],
+    () => dataService.getSystemDefaults(),
+    { ...config },
+  );
+};
+
+/* ── Provider Management Mutations ───────────────────────────────────── */
+
+export const useCreateProviderMutation = (): UseMutationResult<
+  prov.TAIProvider,
+  Error,
+  Partial<prov.TAIProvider>
+> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    [MutationKeys.createProvider],
+    (data) => dataService.createProvider(data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QueryKeys.providersList]);
+      },
+    },
+  );
+};
+
+export const useUpdateProviderMutation = (): UseMutationResult<
+  prov.TAIProvider,
+  Error,
+  { id: string; data: Partial<prov.TAIProvider> }
+> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    [MutationKeys.updateProvider],
+    ({ id, data }) => dataService.updateProvider(id, data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QueryKeys.providersList]);
+        queryClient.invalidateQueries([QueryKeys.providerDetail]);
+      },
+    },
+  );
+};
+
+export const useDeleteProviderMutation = (): UseMutationResult<
+  { success: boolean },
+  Error,
+  string
+> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    [MutationKeys.deleteProvider],
+    (id) => dataService.deleteProvider(id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QueryKeys.providersList]);
+      },
+    },
+  );
+};
+
+export const useCreateProviderKeyMutation = (): UseMutationResult<
+  prov.TProviderKey,
+  Error,
+  { providerId: string; data: prov.TProviderKeyCreate }
+> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    [MutationKeys.createProviderKey],
+    ({ providerId, data }) => dataService.createProviderKey(providerId, data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QueryKeys.providerKeys]);
+      },
+    },
+  );
+};
+
+export const useTestProviderKeyMutation = (): UseMutationResult<
+  { healthy: boolean; latencyMs: number; errorMessage?: string },
+  Error,
+  string
+> => {
+  return useMutation(
+    [MutationKeys.testProviderKey],
+    (keyId) => dataService.testProviderKey(keyId),
+  );
+};
+
+export const useDeleteProviderKeyMutation = (): UseMutationResult<
+  { success: boolean },
+  Error,
+  string
+> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    [MutationKeys.deleteProviderKey],
+    (keyId) => dataService.deleteProviderKey(keyId),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QueryKeys.providerKeys]);
+      },
+    },
+  );
+};
+
+export const useCreateProviderModelMutation = (): UseMutationResult<
+  prov.TProviderModel,
+  Error,
+  { providerId: string; data: Partial<prov.TProviderModel> }
+> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    [MutationKeys.createProviderModel],
+    ({ providerId, data }) => dataService.createProviderModel(providerId, data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QueryKeys.providerModels]);
+      },
+    },
+  );
+};
+
+export const useUpdateProviderModelMutation = (): UseMutationResult<
+  prov.TProviderModel,
+  Error,
+  { modelId: string; data: Partial<prov.TProviderModel> }
+> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    [MutationKeys.updateProviderModel],
+    ({ modelId, data }) => dataService.updateProviderModel(modelId, data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QueryKeys.providerModels]);
+      },
+    },
+  );
+};
+
+export const useDeleteProviderModelMutation = (): UseMutationResult<
+  { success: boolean },
+  Error,
+  string
+> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    [MutationKeys.deleteProviderModel],
+    (modelId) => dataService.deleteProviderModel(modelId),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QueryKeys.providerModels]);
+      },
+    },
+  );
+};
+
+export const useCreateRoutingRuleMutation = (): UseMutationResult<
+  prov.TRoutingRule,
+  Error,
+  Partial<prov.TRoutingRule>
+> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    [MutationKeys.createRoutingRule],
+    (data) => dataService.createRoutingRule(data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QueryKeys.routingRules]);
+      },
+    },
+  );
+};
+
+export const useUpdateRoutingRuleMutation = (): UseMutationResult<
+  prov.TRoutingRule,
+  Error,
+  { id: string; data: Partial<prov.TRoutingRule> }
+> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    [MutationKeys.updateRoutingRule],
+    ({ id, data }) => dataService.updateRoutingRule(id, data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QueryKeys.routingRules]);
+      },
+    },
+  );
+};
+
+export const useDeleteRoutingRuleMutation = (): UseMutationResult<
+  { success: boolean },
+  Error,
+  string
+> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    [MutationKeys.deleteRoutingRule],
+    (id) => dataService.deleteRoutingRule(id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QueryKeys.routingRules]);
+      },
+    },
+  );
+};
+
+export const useUpsertSystemDefaultMutation = (): UseMutationResult<
+  prov.TSystemDefault,
+  Error,
+  prov.TSystemDefault
+> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    [MutationKeys.upsertSystemDefault],
+    (data) => dataService.upsertSystemDefault(data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([QueryKeys.systemDefaults]);
       },
     },
   );

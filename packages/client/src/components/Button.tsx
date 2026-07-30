@@ -18,6 +18,7 @@ const buttonVariants: (
           | null
           | undefined;
         size?: 'default' | 'icon' | 'sm' | 'lg' | null | undefined;
+        loading?: boolean;
       } & ClassProp)
     | undefined,
 ) => string = cva(
@@ -35,7 +36,6 @@ const buttonVariants: (
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-surface-hover hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
-        // hardcoded text color because of WCAG contrast issues (text-white)
         submit: 'bg-surface-submit text-white hover:bg-surface-submit-hover',
       },
       size: {
@@ -56,20 +56,50 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  loading?: boolean;
 }
 
 const Button: React.ForwardRefExoticComponent<
   ButtonProps & React.RefAttributes<HTMLButtonElement>
 > = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, type = 'button', ...props }, ref) => {
+  ({ className, variant, size, asChild = false, type = 'button', loading, children, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
     return (
       <Comp
         type={asChild ? undefined : type}
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(
+          buttonVariants({ variant, size, className }),
+          loading && 'pointer-events-none opacity-70',
+        )}
         ref={ref}
+        disabled={loading || props.disabled}
         {...props}
-      />
+      >
+        {loading && (
+          <svg
+            className="animate-spin size-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+            />
+          </svg>
+        )}
+        {children}
+      </Comp>
     );
   },
 );

@@ -544,6 +544,9 @@ export const imageGenGenerate = () => `${imageGenRoot}/generate`;
 export const imageGenHistory = () => `${imageGenRoot}/history`;
 export const imageGenHistoryEntry = (id: string) => `${imageGenRoot}/history/${id}`;
 export const imageGenToggleFavorite = (id: string) => `${imageGenRoot}/history/${id}/favorite`;
+export const imageGenUpscale = (id: string) => `${imageGenRoot}/upscale/${id}`;
+export const imageGenRemoveBg = (id: string) => `${imageGenRoot}/remove-bg/${id}`;
+export const imageGenVariations = (id: string) => `${imageGenRoot}/variations/${id}`;
 
 /* Video Generation */
 const videoGenRoot = `${BASE_URL}/api/video`;
@@ -555,17 +558,52 @@ export const videoGenStatus = (id: string) => `${videoGenRoot}/history/${id}/sta
 export const videoGenHistoryEntry = (id: string) => `${videoGenRoot}/history/${id}`;
 export const videoGenToggleFavorite = (id: string) => `${videoGenRoot}/history/${id}/favorite`;
 
+/* Media (shared) */
+const mediaRoot = `${BASE_URL}/api/media`;
+export const mediaGenerate = (type: string) => `${mediaRoot}/generate/${type}`;
+export const mediaHistory = () => `${mediaRoot}/history`;
+export const mediaHistoryEntry = (id: string) => `${mediaRoot}/history/${id}`;
+export const mediaToggleFavorite = (id: string) => `${mediaRoot}/history/${id}/favorite`;
+export const mediaRetry = (id: string) => `${mediaRoot}/history/${id}/retry`;
+export const mediaCancel = (id: string) => `${mediaRoot}/history/${id}/cancel`;
+export const mediaCreditCosts = () => `${mediaRoot}/credit-costs`;
+export const mediaPresets = () => `${mediaRoot}/presets`;
+
+/* Admin Media Models */
+const adminMediaRoot = `${BASE_URL}/api/admin/media`;
+export const adminMediaModels = (type?: string) => type ? `${adminMediaRoot}/models/${type}` : `${adminMediaRoot}/models`;
+export const adminMediaModelById = (id: string) => `${adminMediaRoot}/models/${id}`;
+export const adminMediaRoutingRules = () => `${adminMediaRoot}/routing`;
+export const adminMediaRoutingRuleById = (id: string) => `${adminMediaRoot}/routing/${id}`;
+export const adminMediaAnalytics = () => `${adminMediaRoot}/analytics`;
+
 /* Knowledge / RAG Workspace */
 const knowledgeRoot = `${BASE_URL}/api/knowledge`;
 export const knowledgeDocuments = () => `${knowledgeRoot}/documents`;
 export const knowledgeUpload = () => `${knowledgeRoot}/upload`;
 export const knowledgeDocument = (id: string) => `${knowledgeRoot}/documents/${id}`;
+export const knowledgeDocumentDetail = (id: string) => `${knowledgeRoot}/documents/${id}/detail`;
+export const knowledgeDocumentRename = (id: string) => `${knowledgeRoot}/documents/${id}/rename`;
+export const knowledgeDocumentReindex = (id: string) => `${knowledgeRoot}/documents/${id}/reindex`;
+export const knowledgeDocumentMove = (id: string) => `${knowledgeRoot}/documents/${id}/move`;
 export const knowledgeCollections = () => `${knowledgeRoot}/collections`;
 export const knowledgeCollection = (id: string) => `${knowledgeRoot}/collections/${id}`;
+export const knowledgeCollectionAnalytics = (id: string) => `${knowledgeRoot}/collections/${id}/analytics`;
 export const knowledgeCollectionFiles = (id: string) => `${knowledgeRoot}/collections/${id}/files`;
 export const knowledgeCollectionFile = (id: string, fileId: string) => `${knowledgeRoot}/collections/${id}/files/${fileId}`;
 export const knowledgeSearch = () => `${knowledgeRoot}/search`;
 export const knowledgeChat = () => `${knowledgeRoot}/chat`;
+export const knowledgeQuickAction = () => `${knowledgeRoot}/quick-action`;
+export const knowledgeAdminSettings = () => `${knowledgeRoot}/admin/settings`;
+export const knowledgeUploadAsync = () => `${knowledgeRoot}/upload/async`;
+export const knowledgeImportJobs = () => `${knowledgeRoot}/jobs`;
+export const knowledgeImportJob = (id: string) => `${knowledgeRoot}/jobs/${id}`;
+export const knowledgeImportJobCancel = (id: string) => `${knowledgeRoot}/jobs/${id}/cancel`;
+export const knowledgeImportJobRetry = (id: string) => `${knowledgeRoot}/jobs/${id}/retry`;
+export const knowledgeImportJobSSE = (id: string) => `${knowledgeRoot}/jobs/${id}/sse`;
+export const knowledgeCollectionReindex = (id: string) => `${knowledgeRoot}/collections/${id}/reindex`;
+export const knowledgeAdminQueueStatus = () => `${knowledgeRoot}/admin/queue/status`;
+export const knowledgeAdminQueueFailed = () => `${knowledgeRoot}/admin/queue/failed`;
 
 /* Prompt Marketplace */
 const marketplaceRoot = `${BASE_URL}/api/marketplace`;
@@ -736,3 +774,27 @@ export const agentMarketplaceFollowers = (userId: string) => `${agentMarketplace
 export const agentMarketplaceFollowing = () => `${agentMarketplaceRoot()}/user/following`;
 export const agentMarketplaceRevenue = () => `${agentMarketplaceRoot()}/user/revenue`;
 export const agentMarketplaceCreatorProfile = (userId: string) => `${agentMarketplaceRoot()}/creator/${userId}`;
+
+/* ── Provider Management (AI Infrastructure) ─────────────────────────── */
+const adminAiProvidersRoot = () => `${BASE_URL}/api/admin/providers/manage`;
+
+export const adminAiProviderOverview = () => `${adminAiProvidersRoot()}/overview`;
+
+export const adminAiProviders = () => `${adminAiProvidersRoot()}/providers`;
+export const adminAiProviderById = (id: string) => `${adminAiProvidersRoot()}/providers/${id}`;
+
+export const adminAiProviderKeys = (providerId: string) => `${adminAiProvidersRoot()}/providers/${providerId}/keys`;
+export const adminAiProviderKeyTest = (keyId: string) => `${adminAiProvidersRoot()}/keys/${keyId}/test`;
+export const adminAiProviderKeyById = (keyId: string) => `${adminAiProvidersRoot()}/keys/${keyId}`;
+
+export const adminAiProviderModels = (providerId: string) => `${adminAiProvidersRoot()}/providers/${providerId}/models`;
+export const adminAiProviderModelById = (modelId: string) => `${adminAiProvidersRoot()}/models/${modelId}`;
+
+export const adminAiRoutingRules = () => `${adminAiProvidersRoot()}/rules`;
+export const adminAiRoutingRuleById = (id: string) => `${adminAiProvidersRoot()}/rules/${id}`;
+
+export const adminAiProviderUsage = () => `${adminAiProvidersRoot()}/usage`;
+export const adminAiProviderCosts = () => `${adminAiProvidersRoot()}/costs`;
+export const adminAiProviderHealthHistory = (providerId: string) => `${adminAiProvidersRoot()}/providers/${providerId}/health`;
+
+export const adminAiSystemDefaults = () => `${adminAiProvidersRoot()}/defaults`;

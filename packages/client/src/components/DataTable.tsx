@@ -402,28 +402,35 @@ export default function DataTable<TData, TValue>({
         {searchResultsAnnouncement}
       </div>
 
-      {/* Table controls */}
-      <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-        {enableRowSelection && showCheckboxes && (
-          <DeleteButton
-            onDelete={handleDelete}
-            isDeleting={isDeleting}
-            disabled={!table.getFilteredSelectedRowModel().rows.length || isDeleting}
-            isSmallScreen={isSmallScreen}
-            ariaLabel={localize('com_ui_delete_selected_items')}
-          />
-        )}
-        {filterColumn !== undefined && table.getColumn(filterColumn) && enableSearch && (
-          <div className="relative flex-1">
-            <AnimatedSearchInput
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              isSearching={isSearching}
-              placeholder="Search..."
-            />
-          </div>
-        )}
-      </div>
+            {/* Selected row counter */}
+            {Object.keys(rowSelection).length > 0 && (
+              <div className="flex items-center gap-2 px-4 py-2 text-sm text-text-secondary">
+                <span>{Object.keys(rowSelection).length} selected</span>
+              </div>
+            )}
+
+            {/* Table controls */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+              {enableRowSelection && showCheckboxes && (
+                <DeleteButton
+                  onDelete={handleDelete}
+                  isDeleting={isDeleting}
+                  disabled={!table.getFilteredSelectedRowModel().rows.length || isDeleting}
+                  isSmallScreen={isSmallScreen}
+                  ariaLabel={localize('com_ui_delete_selected_items')}
+                />
+              )}
+              {filterColumn !== undefined && table.getColumn(filterColumn) && enableSearch && (
+                <div className="relative flex-1">
+                  <AnimatedSearchInput
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    isSearching={isSearching}
+                    placeholder="Search..."
+                  />
+                </div>
+              )}
+            </div>
 
       {/* Virtualized table */}
       <div
@@ -488,10 +495,27 @@ export default function DataTable<TData, TValue>({
               );
             })}
 
-            {!virtualRows.length && (
+            {!virtualRows.length && !isLoading && (
               <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={columns.length} className="p-4 text-center">
-                  No data available
+                <TableCell colSpan={columns.length} className="p-8 text-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="size-12 text-text-secondary"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6Zm9 0A2.25 2.25 0 0 1 15 3.75h2.25A2.25 2.25 0 0 1 20 6v2.25a2.25 2.25 0 0 1-2.25 2.25h-2.25A2.25 2.25 0 0 1 15 8.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25Zm9 0A2.25 2.25 0 0 1 15 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25h-2.25A2.25 2.25 0 0 1 15 18v-2.25Z"
+                      />
+                    </svg>
+                    <p className="text-sm text-text-secondary">No data available</p>
+                  </div>
                 </TableCell>
               </TableRow>
             )}

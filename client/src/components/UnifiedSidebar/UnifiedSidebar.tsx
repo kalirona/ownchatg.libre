@@ -24,6 +24,14 @@ function getInitialWidth(): number {
   return saved ? Math.max(Number(saved), EXPANDED_MIN) : EXPANDED_MIN;
 }
 
+function getInitialExpanded(): boolean {
+  const saved = localStorage.getItem('side:expanded');
+  if (saved !== null) {
+    return saved === 'true';
+  }
+  return true;
+}
+
 /**
  * Isolates useChatHelpers Recoil subscriptions from the sidebar layout.
  * Atom changes (e.g. during streaming) only re-render this component
@@ -52,6 +60,7 @@ function RouteSync() {
       '/video': 'video-gen',
       '/knowledge': 'knowledge',
       '/marketplace': 'marketplace',
+      '/admin/providers': 'ai-infrastructure',
       '/admin': 'admin',
       '/workflows': 'workflows',
       '/profile': 'profile',
@@ -191,7 +200,22 @@ function UnifiedSidebar() {
   }, []);
 
   useEffect(() => {
-    if (!isSmallScreen || !expanded) {
+    if (!isSmallScreen) {
+      localStorage.setItem('side:expanded', String(expanded));
+    }
+  }, [expanded, isSmallScreen]);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      return;
+    }
+    if (!showSecondaryPanel && expanded) {
+      setExpanded(false);
+    }
+  }, [showSecondaryPanel, expanded, setExpanded, isSmallScreen]);
+
+  useEffect(() => {
+    if (isSmallScreen || !expanded) {
       return;
     }
     const handler = (e: KeyboardEvent) => {

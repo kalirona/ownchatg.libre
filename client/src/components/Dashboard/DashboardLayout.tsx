@@ -41,3 +41,5 @@ export default function DashboardLayout({
     </div>
   );
 }
+
+export { WIDGET_LABELS };

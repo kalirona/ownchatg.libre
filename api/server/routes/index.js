@@ -61,6 +61,9 @@ const uptime = require('./uptime');
 const betterStack = require('./betterStack');
 const adminQueueMonitor = require('./admin/queueMonitor');
 const adminProviderHealth = require('./admin/providerHealth');
+const adminProvidersRouter = require('./admin/providers');
+const media = require('./media');
+const adminMedia = require('./admin/media');
 
 module.exports = {
   costOptimizer,
@@ -69,6 +72,7 @@ module.exports = {
   adminMonitoring,
   adminQueueMonitor,
   adminProviderHealth,
+  adminProvidersRouter,
   uptime,
   betterStack,
   notifications,
@@ -126,4 +130,6 @@ module.exports = {
   categories,
   staticRoute,
   accessPermissions,
+  media,
+  adminMedia,
 };

@@ -1066,6 +1066,13 @@ export type TKnowledgeCollection = {
   parentId: string | null;
   icon: string;
   fileIds: TKnowledgeDocument[];
+  documentCount: number;
+  totalBytes: number;
+  embeddedCount: number;
+  chunkCount: number;
+  aiChats: number;
+  questionsAsked: number;
+  lastActivityAt: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -1081,6 +1088,21 @@ export type TKnowledgeDocument = {
   updatedAt: string;
   filepath: string;
   source: string;
+  pages?: number;
+  chunks?: number;
+  embeddingModel?: string;
+  lastUsedAt?: string;
+  embeddingStatus?: 'pending' | 'extracting' | 'chunking' | 'embedding' | 'ready' | 'failed';
+  error?: string | null;
+};
+
+export type TKnowledgeDocumentDetail = TKnowledgeDocument & {
+  questionsAsked: number;
+  referencedCount: number;
+  embeddingProvider?: string;
+  chunkSize?: number;
+  chunkOverlap?: number;
+  ocrUsed?: boolean;
 };
 
 export type TKnowledgeDocumentListResponse = {
@@ -1092,6 +1114,15 @@ export type TKnowledgeCollectionListResponse = {
   collections: TKnowledgeCollection[];
 };
 
+export type TKnowledgeCollectionAnalytics = {
+  documentCount: number;
+  totalBytes: number;
+  chunkCount: number;
+  embeddedPct: number;
+  aiChats: number;
+  questionsAsked: number;
+};
+
 export type TKnowledgeSearchRequest = {
   fileIds: string[];
   query: string;
@@ -1100,7 +1131,7 @@ export type TKnowledgeSearchRequest = {
 
 export type TKnowledgeSearchResult = {
   fileId: string;
-  data: Array<{ text?: string; content?: string; score?: number }>;
+  data: Array<{ text?: string; content?: string; score?: number; page?: number; sourceDoc?: string }>;
 };
 
 export type TKnowledgeSearchResponse = {
@@ -1110,12 +1141,22 @@ export type TKnowledgeSearchResponse = {
 export type TKnowledgeChatRequest = {
   message: string;
   fileIds: string[];
+  action?: string;
+};
+
+export type TKnowledgeSource = {
+  fileId: string;
+  filename: string;
+  page?: number;
+  excerpt?: string;
 };
 
 export type TKnowledgeChatResponse = {
   answer: string;
-  sources: string[];
+  sources: TKnowledgeSource[];
 };
+
+export type TKnowledgeQuickAction = 'summarize' | 'faq' | 'extract-tables' | 'sop' | 'translate' | 'blog' | 'quiz' | 'flashcards';
 
 export type TKnowledgeCreateCollectionRequest = {
   name: string;
@@ -1129,6 +1170,109 @@ export type TKnowledgeUpdateCollectionRequest = {
   description?: string;
   parentId?: string | null;
   icon?: string;
+};
+
+export type TKnowledgeAdminSettings = {
+  _id?: string;
+  embeddingProvider: string;
+  embeddingModel: string;
+  chunkSize: number;
+  chunkOverlap: number;
+  maxFileSize: number;
+  ocrEnabled: boolean;
+  supportedTypes: string[];
+  vectorDatabase: string;
+  reindexWorkers: number;
+  storageLimits: { plan: string; limitBytes: number }[];
+};
+
+export type TKnowledgeUploadProgress = {
+  stage: 'uploading' | 'extracting' | 'chunking' | 'embedding' | 'ready' | 'failed';
+  pct: number;
+  message: string;
+  fileId?: string;
+  error?: string;
+};
+
+/* Import / Background Processing Jobs */
+export type TImportJobStep = {
+  name: string;
+  status: 'running' | 'completed' | 'failed';
+  startedAt: string;
+  finishedAt?: string;
+  duration?: number;
+};
+
+export type TImportJobLog = {
+  level: 'info' | 'warn' | 'error';
+  message: string;
+  timestamp: string;
+};
+
+export type TImportJobStatus =
+  | 'queued'
+  | 'processing'
+  | 'extracting'
+  | 'ocr'
+  | 'chunking'
+  | 'embedding'
+  | 'saving'
+  | 'retrying'
+  | 'completed'
+  | 'failed'
+  | 'cancelled';
+
+export type TImportJob = {
+  _id: string;
+  user: string;
+  tenantId?: string;
+  sourceType: 'file_upload' | 'reindex' | 'website_crawl' | 'youtube' | 'drive' | 'notion';
+  filePath?: string;
+  originalFilename?: string;
+  mimeType?: string;
+  fileSize?: number;
+  collection?: string;
+  status: TImportJobStatus;
+  progress: {
+    pct: number;
+    currentStep: string;
+    message: string;
+    startedAt?: string;
+    finishedAt?: string;
+  };
+  error?: {
+    message: string;
+    stack?: string;
+    stage?: string;
+  } | null;
+  retries: number;
+  result?: {
+    chunkCount?: number;
+    vectorCount?: number;
+    documentIds?: string[];
+  };
+  steps: TImportJobStep[];
+  logs: TImportJobLog[];
+  queueTimestamps: {
+    queuedAt?: string;
+    processingStartedAt?: string;
+    completedAt?: string;
+    cancelledAt?: string;
+  };
+  workerId?: string;
+  duration?: number;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TImportJobListResponse = {
+  jobs: TImportJob[];
+  total: number;
+};
+
+export type TImportJobResponse = {
+  job: TImportJob;
 };
 
 /* Prompt Marketplace */

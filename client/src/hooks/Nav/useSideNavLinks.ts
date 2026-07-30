@@ -19,6 +19,7 @@ import {
   Wrench,
   Shield,
   Play,
+  Server,
 } from 'lucide-react';
 import {
   Permissions,
@@ -172,6 +173,15 @@ export default function useSideNavLinks({
       id: 'admin',
       section: 'workspace' as NavSection,
       onClick: () => navigate('/admin'),
+    });
+
+    links.push({
+      title: 'AI Infrastructure',
+      label: '',
+      icon: Server,
+      id: 'ai-infrastructure',
+      section: 'workspace' as NavSection,
+      onClick: () => navigate('/admin/providers'),
     });
 
     links.push({
