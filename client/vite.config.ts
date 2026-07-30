@@ -187,6 +187,7 @@ export default defineConfig(({ command }) => ({
       external: [
         '@react-spring/web',
         'react-window',
+        '@ariakit/react-components',
       ],
       output: {
         codeSplitting: {

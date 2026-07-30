@@ -208,6 +208,7 @@
   "dependencies": {
     "helmet": "^8.3.0",
     "@react-spring/web": "^9.7.5",
-    "react-window": "^1.8.11"
+    "react-window": "^1.8.11",
+    "@ariakit/react-components": "^0.1.2"
   }
 }
