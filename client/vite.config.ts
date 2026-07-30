@@ -186,6 +186,7 @@ export default defineConfig(({ command }) => ({
       preserveEntrySignatures: 'strict',
       external: [
         '@react-spring/web',
+        'react-window',
       ],
       output: {
         codeSplitting: {
