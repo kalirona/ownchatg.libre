@@ -868,9 +868,6 @@ select:focus-visible {
 :focus:not(:focus-visible) {
   outline: none;
 }
-  font-size: 1rem;
-  line-height: 1.5rem;
-}
 
 .overflow-y-auto {
   overflow-y: overlay;
