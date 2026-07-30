@@ -47,3 +47,27 @@ export * from './Workflows';
 export { useAgentCapabilities, useGetAgentsConfig } from '../hooks/Agents';
 export { useMCPServerManager } from '../hooks/MCP';
 export { useHasAccess } from '../hooks/Roles';
+
+/* Provider Management hooks (re-exported from librechat-data-provider/react-query) */
+export {
+  useGetProviderOverview,
+  useGetProvidersList,
+  useGetProviderById,
+  useGetProviderKeys,
+  useGetProviderModels,
+  useGetRoutingRules,
+  useGetProviderUsage,
+  useGetProviderCosts,
+  useGetProviderHealthHistory,
+  useGetSystemDefaults,
+  useCreateProviderMutation,
+  useUpdateProviderMutation,
+  useDeleteProviderMutation,
+  useCreateProviderKeyMutation,
+  useTestProviderKeyMutation,
+  useDeleteProviderKeyMutation,
+  useCreateProviderModelMutation,
+  useCreateRoutingRuleMutation,
+  useDeleteRoutingRuleMutation,
+  useUpsertSystemDefaultMutation,
+} from 'librechat-data-provider/react-query';
