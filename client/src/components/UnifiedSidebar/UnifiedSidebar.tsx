@@ -14,18 +14,18 @@ import Sidebar from './Sidebar';
 import { cn } from '~/utils';
 import store from '~/store';
 
-const COLLAPSED_WIDTH = 200;
-const EXPANDED_MIN = 360;
+const COLLAPSED_WIDTH = 72;
+const EXPANDED_MIN = 280;
 const TRANSITION_MS = 300;
 const EASING = 'cubic-bezier(0.2, 0, 0, 1)';
 
 function getInitialWidth(): number {
   const saved = localStorage.getItem('side:width');
-  return saved ? Math.max(Number(saved), EXPANDED_MIN) : EXPANDED_MIN;
+  return saved ? Math.max(Number(saved), EXPANDED_MIN) : 320;
 }
 
 function getInitialExpanded(): boolean {
-  const saved = localStorage.getItem('side:expanded');
+  const saved = localStorage.getItem('unifiedSidebarExpanded');
   if (saved !== null) {
     return saved === 'true';
   }
@@ -201,7 +201,7 @@ function UnifiedSidebar() {
 
   useEffect(() => {
     if (!isSmallScreen) {
-      localStorage.setItem('side:expanded', String(expanded));
+      localStorage.setItem('unifiedSidebarExpanded', String(expanded));
     }
   }, [expanded, isSmallScreen]);
 
