@@ -24,10 +24,8 @@ const AccountSettings = lazy(() => import('~/components/Nav/AccountSettings'));
 
 const NewChatButton = memo(function NewChatButton({
   setActive,
-  expanded,
 }: {
   setActive: (id: string) => void;
-  expanded: boolean;
 }) {
   const localize = useLocalize();
   const queryClient = useQueryClient();
@@ -66,7 +64,7 @@ const NewChatButton = memo(function NewChatButton({
           onClick={handleClick}
         >
           <SquarePen className="h-5 w-5 flex-shrink-0 text-text-primary" />
-          {expanded && <span className="text-sm">{localize('com_ui_new_chat')}</span>}
+          <span className="text-sm">{localize('com_ui_new_chat')}</span>
         </a>
       }
     />
@@ -117,7 +115,7 @@ const NavIconButton = memo(function NavIconButton({
       side="right"
       render={
         <Button
-          size={expanded ? 'default' : 'icon'}
+          size="default"
           variant="ghost"
           aria-label={localize(link.title)}
           aria-pressed={isActive}
@@ -131,7 +129,7 @@ const NavIconButton = memo(function NavIconButton({
           onClick={handleClick}
         >
           <link.icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-          {expanded && <span className="text-sm">{localize(link.title)}</span>}
+          <span className="text-sm">{localize(link.title)}</span>
         </Button>
       }
     />
@@ -203,7 +201,7 @@ function ExpandedPanel({
           </Button>
         }
       />
-      <NewChatButton setActive={setActive} expanded={expanded} />
+      <NewChatButton setActive={setActive} />
       <div className="mx-2 border-b border-border-light" />
       <div className="flex flex-col overflow-y-auto">
         {sectionedLinks.map((group, groupIdx) => (
@@ -234,7 +232,7 @@ function ExpandedPanel({
 
       <div className="mt-auto">
         <Suspense fallback={<Skeleton className="h-9 w-full rounded-lg" />}>
-          <AccountSettings collapsed={!expanded} />
+          <AccountSettings />
         </Suspense>
       </div>
     </div>
