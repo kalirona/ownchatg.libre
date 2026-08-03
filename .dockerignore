@@ -9,9 +9,10 @@
 # Specific patterns to ignore
 data-node
 meili_data*
-librechat*
-Dockerfile*
 docs
+
+# Keep the config example file so users can generate their own librechat.yaml
+!librechat.example.yaml
 
 # Ignore all hidden files
 .*

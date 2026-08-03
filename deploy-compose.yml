@@ -1,10 +1,9 @@
 services:
   api:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile.multi
-    #   target: api-build
-    image: registry.librechat.ai/danny-avila/librechat-dev-api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: librechat-api:local
     container_name: LibreChat-API
     ports:
       - 3080:3080
@@ -32,9 +31,14 @@ services:
       - no_proxy=${no_proxy:-localhost,127.0.0.1,::1},${NO_PROXY:-},mongodb,chat-mongodb,meilisearch,chat-meilisearch,rag_api,vectordb,host.docker.internal
       - ADMIN_PANEL_URL=${ADMIN_PANEL_URL:-http://admin.localhost}
     volumes:
-      - type: bind
-        source: ./librechat.yaml
-        target: /app/librechat.yaml
+      # NOTE: librechat.yaml is gitignored. If it does not exist on the host,
+      # Docker creates a directory at ./librechat.yaml and the container will
+      # crash when reading it as a YAML file. Uncomment ONLY if you have created
+      # a librechat.yaml in the project root, otherwise rely on .env config.
+      # - type: bind
+      #   source: ./librechat.yaml
+      #   target: /app/librechat.yaml
+      - ./.env:/app/.env
       - ./images:/app/client/public/images
       - ./uploads:/app/uploads
       - ./logs:/app/api/logs
