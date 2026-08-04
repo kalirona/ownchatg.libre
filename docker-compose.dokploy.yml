@@ -1,0 +1,83 @@
+# Dokploy Docker Compose deployment for ownchagpt (LibreChat)
+# In Dokploy: Project -> Docker Compose -> select this repo,
+# set Compose File to docker-compose.dokploy.yml, add the env vars below, deploy.
+
+services:
+  api:
+    container_name: ownchagpt-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ownchagpt-api:local
+    ports:
+      - "3080:3080"
+    depends_on:
+      - mongodb
+      - meilisearch
+    restart: always
+    environment:
+      - HOST=0.0.0.0
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongodb:27017/LibreChat
+      - MEILI_HOST=http://meilisearch:7700
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - CREDS_KEY=${CREDS_KEY}
+      - CREDS_IV=${CREDS_IV}
+      - DOMAIN_CLIENT=${DOMAIN_CLIENT:-http://localhost}
+      - RAG_API_URL=http://rag_api:8000
+    volumes:
+      - ./images:/app/client/public/images
+      - ./skill:/app/skill
+      - uploads:/app/uploads
+      - logs:/app/logs
+
+  mongodb:
+    container_name: chat-mongodb
+    image: mongo:8.0.20
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+    command: mongod --noauth
+
+  meilisearch:
+    container_name: chat-meilisearch
+    image: getmeili/meilisearch:v1.35.1
+    restart: always
+    environment:
+      - MEILI_HOST=http://meilisearch:7700
+      - MEILI_NO_ANALYTICS=true
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+    volumes:
+      - meili-data:/meili_data
+
+  vectordb:
+    image: pgvector/pgvector:0.8.0-pg15-trixie
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    restart: always
+    volumes:
+      - pgdata2:/var/lib/postgresql/data
+
+  rag_api:
+    image: registry.librechat.ai/danny-avila/librechat-rag-api-dev-lite:latest
+    environment:
+      - DB_HOST=vectordb
+      - RAG_PORT=8000
+    restart: always
+    depends_on:
+      - vectordb
+    volumes:
+      - uploads:/app/uploads
+      - ./images:/app/client/public/images
+      - ./skill:/app/skill
+
+volumes:
+  mongo-data:
+  meili-data:
+  pgdata2:
+  uploads:
+  logs:
