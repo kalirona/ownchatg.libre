@@ -15,9 +15,14 @@ services:
       - mongodb
       - meilisearch
     restart: always
+    mem_limit: 2g
+    memswap_limit: 2g
+    pids_limit: 256
     environment:
       - HOST=0.0.0.0
       - NODE_ENV=production
+      # Cap Node heap below the 2g container limit so it GCs instead of OOM-killing.
+      - NODE_OPTIONS=--max-old-space-size=1536
       - MONGO_URI=mongodb://mongodb:27017/LibreChat
       - MEILI_HOST=http://meilisearch:7700
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
@@ -32,11 +37,40 @@ services:
       - ./skill:/app/skill
       - uploads:/app/uploads
       - logs:/app/logs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(\`${API_DOMAIN:-api.yourdomain.com}\`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.api.loadbalancer.server.port=3080"
+
+  admin-panel:
+    container_name: ownchagpt-admin
+    image: registry.librechat.ai/clickhouse/librechat-admin-panel:latest
+    ports:
+      - "${ADMIN_PANEL_PORT:-3001}:3000"
+    depends_on:
+      - api
+    restart: always
+    environment:
+      - PORT=3000
+      - SESSION_SECRET=${ADMIN_PANEL_SESSION_SECRET}
+      - API_SERVER_URL=http://api:3080
+      - VITE_API_BASE_URL=${DOMAIN_CLIENT:-http://localhost}
+      - SESSION_COOKIE_SECURE=${ADMIN_PANEL_SESSION_COOKIE_SECURE:-false}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.admin.rule=Host(\`${ADMIN_DOMAIN:-admin.yourdomain.com}\`)"
+      - "traefik.http.routers.admin.entrypoints=websecure"
+      - "traefik.http.routers.admin.tls.certresolver=letsencrypt"
+      - "traefik.http.services.admin.loadbalancer.server.port=3000"
 
   mongodb:
     container_name: chat-mongodb
     image: mongo:8.0.20
     restart: always
+    mem_limit: 1g
+    memswap_limit: 1g
     volumes:
       - mongo-data:/data/db
     command: mongod --noauth
@@ -45,6 +79,8 @@ services:
     container_name: chat-meilisearch
     image: getmeili/meilisearch:v1.35.1
     restart: always
+    mem_limit: 768m
+    memswap_limit: 768m
     environment:
       - MEILI_HOST=http://meilisearch:7700
       - MEILI_NO_ANALYTICS=true
@@ -59,6 +95,8 @@ services:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
     restart: always
+    mem_limit: 512m
+    memswap_limit: 512m
     volumes:
       - pgdata2:/var/lib/postgresql/data
 
@@ -68,6 +106,8 @@ services:
       - DB_HOST=vectordb
       - RAG_PORT=8000
     restart: always
+    mem_limit: 512m
+    memswap_limit: 512m
     depends_on:
       - vectordb
     volumes:
