@@ -20,9 +20,17 @@ services:
     environment:
       - HOST=0.0.0.0
       - MONGO_URI=mongodb://mongodb:27017/LibreChat
-      - MEILI_HOST=http://meilisearch:7700
+      - MEILI_HOST=${MEILI_HOST:-http://meilisearch:7700}
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - CREDS_KEY=${CREDS_KEY}
+      - DOMAIN_SERVER=${DOMAIN_SERVER}
+      - DOMAIN_CLIENT=${DOMAIN_CLIENT}
+      - PORT=${PORT:-3080}
+      - NODE_ENV=${NODE_ENV:-production}
       - RAG_PORT=${RAG_PORT:-8000}
-      - RAG_API_URL=http://rag_api:${RAG_PORT:-8000}
+      - RAG_API_URL=${RAG_API_URL:-http://rag_api:${RAG_PORT:-8000}}
       - PROXY=${PROXY:-}
       - HTTP_PROXY=${HTTP_PROXY:-}
       - HTTPS_PROXY=${HTTPS_PROXY:-}
@@ -31,9 +39,6 @@ services:
       - https_proxy=${https_proxy:-}
       - no_proxy=${no_proxy:-localhost,127.0.0.1,::1},${NO_PROXY:-},mongodb,chat-mongodb,meilisearch,chat-meilisearch,rag_api,vectordb,host.docker.internal
     volumes:
-      - type: bind
-        source: ./.env
-        target: /app/.env
       - ./images:/app/client/public/images
       - ./uploads:/app/uploads
       - ./logs:/app/logs
@@ -49,7 +54,7 @@ services:
     environment:
       - PORT=3000
       # Plain expansion (not :?) so `docker compose down`/`pull` still run when this is unset.
-      # The panel itself refuses to start without it; set ADMIN_PANEL_SESSION_SECRET in .env.
+      # The panel itself refuses to start without it; set ADMIN_PANEL_SESSION_SECRET in the deploy environment.
       - SESSION_SECRET=${ADMIN_PANEL_SESSION_SECRET}
       - API_SERVER_URL=http://api:${PORT:-3080}
       - VITE_API_BASE_URL=${DOMAIN_CLIENT:-http://localhost:3080}
@@ -92,8 +97,6 @@ services:
     restart: always
     depends_on:
       - vectordb
-    env_file:
-      - .env
 
 volumes:
   pgdata2:
