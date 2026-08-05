@@ -41,7 +41,7 @@ RUN \
     npm config set fetch-retries 5 ; \
     npm config set fetch-retry-mintimeout 15000 ; \
     attempt=1 ; \
-    until timeout "$NPM_CI_TIMEOUT_SECONDS" npm ci --no-audit --legacy-peer-deps ; do \
+    until timeout "$NPM_CI_TIMEOUT_SECONDS" npm ci --no-audit ; do \
         status=$? ; \
         if [ "$attempt" -ge "$NPM_CI_ATTEMPTS" ]; then \
             exit "$status" ; \

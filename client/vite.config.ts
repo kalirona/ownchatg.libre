@@ -184,11 +184,6 @@ export default defineConfig(({ command }) => ({
     minify: 'oxc',
     rolldownOptions: {
       preserveEntrySignatures: 'strict',
-      external: [
-        '@react-spring/web',
-        'react-window',
-        '@ariakit/react-components',
-      ],
       output: {
         codeSplitting: {
           groups: [

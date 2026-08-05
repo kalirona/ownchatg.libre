@@ -12,7 +12,7 @@ router.use(configMiddleware);
 
 /* ── Media Models ─────────────────────────────── */
 
-router.get('/models/:type?', async (req, res) => {
+router.get('/models{/:type}', async (req, res) => {
   try {
     const type = req.params.type;
     const filter = {};
