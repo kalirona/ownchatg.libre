@@ -72,11 +72,25 @@ const fileFormat = winston.format.combine(
 const logLevel = useDebugLogging ? 'debug' : 'error';
 const transports = [];
 
+const safeFileTransport = (options) => {
+  const transport = new winston.transports.DailyRotateFile(options);
+  const handleError = (err) => {
+    // When the log directory is not writable (e.g. root-owned host bind mount),
+    // degrade gracefully to console logging instead of crashing the process.
+    if (err.code === 'EACCES' || err.code === 'EPERM' || err.code === 'ENOENT') {
+      console.error(`[logger] file transport unavailable: ${err.message}`);
+    }
+  };
+  transport.on('error', handleError);
+  transport.logStream?.on('error', handleError);
+  return transport;
+};
+
 if (useFileLogging) {
   const logDir = getLogDir();
 
   transports.push(
-    new winston.transports.DailyRotateFile({
+    safeFileTransport({
       level: logLevel,
       filename: `${logDir}/meiliSync-%DATE%.log`,
       datePattern: 'YYYY-MM-DD',
