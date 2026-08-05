@@ -97,11 +97,25 @@ const fileFormat = winston.format.combine(
 
 const transports: winston.transport[] = [];
 
+const safeFileTransport = (options: winston.transports.DailyRotateFileTransportOptions) => {
+  const transport = new winston.transports.DailyRotateFile(options);
+  const handleError = (err: NodeJS.ErrnoException) => {
+    // When the log directory is not writable (e.g. root-owned host bind mount),
+    // degrade gracefully to console logging instead of crashing the process.
+    if (err.code === 'EACCES' || err.code === 'EPERM' || err.code === 'ENOENT') {
+      console.error(`[logger] file transport unavailable: ${err.message}`);
+    }
+  };
+  transport.on('error', handleError);
+  transport.logStream?.on('error', handleError);
+  return transport;
+};
+
 if (useFileLogging) {
   const logDir = getLogDirectory();
 
   transports.push(
-    new winston.transports.DailyRotateFile({
+    safeFileTransport({
       level: 'error',
       filename: `${logDir}/error-%DATE%.log`,
       datePattern: 'YYYY-MM-DD',
@@ -114,7 +128,7 @@ if (useFileLogging) {
 
   if (useDebugLogging) {
     transports.push(
-      new winston.transports.DailyRotateFile({
+      safeFileTransport({
         level: 'debug',
         filename: `${logDir}/debug-%DATE%.log`,
         datePattern: 'YYYY-MM-DD',

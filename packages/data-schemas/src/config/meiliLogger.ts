@@ -43,11 +43,23 @@ const fileFormat = winston.format.combine(
 const logLevel = useDebugLogging ? 'debug' : 'error';
 const transports: winston.transport[] = [];
 
+const safeFileTransport = (options: winston.transports.DailyRotateFileTransportOptions) => {
+  const transport = new winston.transports.DailyRotateFile(options);
+  const handleError = (err: NodeJS.ErrnoException) => {
+    if (err.code === 'EACCES' || err.code === 'EPERM' || err.code === 'ENOENT') {
+      console.error(`[logger] file transport unavailable: ${err.message}`);
+    }
+  };
+  transport.on('error', handleError);
+  transport.logStream?.on('error', handleError);
+  return transport;
+};
+
 if (useFileLogging) {
   const logDir = getLogDirectory();
 
   transports.push(
-    new winston.transports.DailyRotateFile({
+    safeFileTransport({
       level: logLevel,
       filename: `${logDir}/meiliSync-%DATE%.log`,
       datePattern: 'YYYY-MM-DD',
