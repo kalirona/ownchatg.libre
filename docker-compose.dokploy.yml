@@ -5,14 +5,18 @@
 #      docker-compose.dokploy.yml.
 #   2. In the compose env tab, set every variable listed in
 #      .env.dokploy.example (DOMAIN_CLIENT, DOMAIN_SERVER, ALLOWED_ORIGINS,
-#      JWT_SECRET, JWT_REFRESH_SECRET, CREDS_KEY, CREDS_IV,
-#      MEILI_MASTER_KEY, ADMIN_PANEL_SESSION_SECRET, plus the API/DOMAIN
-#      labels below). Deploy.
+#      MONGO_URI, JWT_SECRET, JWT_REFRESH_SECRET, CREDS_KEY, CREDS_IV,
+#      MEILI_MASTER_KEY, ADMIN_PANEL_SESSION_SECRET). Deploy.
 #
-# All app data (mongo, meili, uploads, images, logs, skill) lives in NAMED
-# volumes so the container (running as uid 1000 / the `node` user) always
-# gets writable, node-owned directories -- this avoids the EACCES / EAI_AGAIN
-# issues seen with root-owned bind mounts on a fresh VPS.
+# MongoDB is a SEPARATE Dokploy app (deployed from the Dokploy marketplace).
+# Apps and databases in Dokploy share the "dokploy-network" network. Compose
+# projects get their own isolated network, so the api + admin-panel services
+# are attached to BOTH (default + dokploy-network) here. Without this the API
+# cannot resolve the MongoDB hostname and Traefik cannot route the domain.
+#
+# All app data (meili, uploads, images, logs, skill) lives in NAMED volumes so
+# the container (running as uid 1000 / the `node` user) always gets writable,
+# node-owned directories.
 
 services:
   api:
@@ -25,10 +29,11 @@ services:
     ports:
       - "3080:3080"
     depends_on:
-      mongodb:
-        condition: service_healthy
       meilisearch:
         condition: service_healthy
+    networks:
+      - default
+      - dokploy-network
     restart: always
     mem_limit: 2g
     memswap_limit: 2g
@@ -39,7 +44,7 @@ services:
       - PORT=3080
       # Cap Node heap below the 2g container limit so it GCs instead of OOM-killing.
       - NODE_OPTIONS=--max-old-space-size=1536
-      - MONGO_URI=mongodb://mongodb:27017/LibreChat
+      - "MONGO_URI=${MONGO_URI:-mongodb://mongodb:cc7ILFYAPr89oBi2jNbR@ownchatgpt-mongodb-o65fmy:27017/?authSource=admin&directConnection=true}"
       - MEILI_HOST=http://meilisearch:7700
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
       - JWT_SECRET=${JWT_SECRET}
@@ -59,6 +64,7 @@ services:
       - logs:/app/logs
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
       - "traefik.http.routers.api.rule=Host(`${API_DOMAIN:-chat.sitenexai.com}`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls.certresolver=letsencrypt"
@@ -71,6 +77,9 @@ services:
       - "${ADMIN_PANEL_PORT:-3041}:3000"
     depends_on:
       - api
+    networks:
+      - default
+      - dokploy-network
     restart: always
     environment:
       - PORT=3000
@@ -80,26 +89,11 @@ services:
       - SESSION_COOKIE_SECURE=${ADMIN_PANEL_SESSION_COOKIE_SECURE:-true}
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
       - "traefik.http.routers.admin.rule=Host(`${ADMIN_DOMAIN:-admin.sitenexai.com}`)"
       - "traefik.http.routers.admin.entrypoints=websecure"
       - "traefik.http.routers.admin.tls.certresolver=letsencrypt"
       - "traefik.http.services.admin.loadbalancer.server.port=3000"
-
-  mongodb:
-    container_name: chat-mongodb
-    image: mongo:8.0.20
-    restart: always
-    mem_limit: 1g
-    memswap_limit: 1g
-    command: mongod --noauth --wiredTigerCacheSizeGB 0.5
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 60s
-    volumes:
-      - mongo-data:/data/db
 
   meilisearch:
     container_name: chat-meilisearch
@@ -160,8 +154,11 @@ services:
       - images:/app/client/public/images
       - skill:/app/skill
 
+networks:
+  dokploy-network:
+    external: true
+
 volumes:
-  mongo-data:
   meili-data:
   pgdata2:
   uploads:
