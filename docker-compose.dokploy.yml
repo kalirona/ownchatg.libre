@@ -46,11 +46,11 @@ services:
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
       - CREDS_KEY=${CREDS_KEY}
       - CREDS_IV=${CREDS_IV}
-      - DOMAIN_CLIENT=${DOMAIN_CLIENT:-http://localhost:3080}
-      - DOMAIN_SERVER=${DOMAIN_SERVER:-http://localhost:3080}
+      - DOMAIN_CLIENT=${DOMAIN_CLIENT:-https://chat.sitenexai.com}
+      - DOMAIN_SERVER=${DOMAIN_SERVER:-https://chat.sitenexai.com}
       # REQUIRED in production: the server exits if this is empty. Comma-separated
       # list of browser origins that may call the API (client domain + admin panel).
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3080}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://chat.sitenexai.com}
       - RAG_API_URL=http://rag_api:8000
     volumes:
       - images:/app/client/public/images
@@ -59,7 +59,7 @@ services:
       - logs:/app/logs
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`${API_DOMAIN:-chat.yourdomain.com}`)"
+      - "traefik.http.routers.api.rule=Host(`${API_DOMAIN:-chat.sitenexai.com}`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls.certresolver=letsencrypt"
       - "traefik.http.services.api.loadbalancer.server.port=3080"
@@ -76,11 +76,11 @@ services:
       - PORT=3000
       - SESSION_SECRET=${ADMIN_PANEL_SESSION_SECRET}
       - API_SERVER_URL=http://api:3080
-      - VITE_API_BASE_URL=${DOMAIN_CLIENT:-http://localhost:3080}
+      - VITE_API_BASE_URL=${DOMAIN_CLIENT:-https://chat.sitenexai.com}
       - SESSION_COOKIE_SECURE=${ADMIN_PANEL_SESSION_COOKIE_SECURE:-true}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.admin.rule=Host(`${ADMIN_DOMAIN:-admin.yourdomain.com}`)"
+      - "traefik.http.routers.admin.rule=Host(`${ADMIN_DOMAIN:-admin.sitenexai.com}`)"
       - "traefik.http.routers.admin.entrypoints=websecure"
       - "traefik.http.routers.admin.tls.certresolver=letsencrypt"
       - "traefik.http.services.admin.loadbalancer.server.port=3000"
