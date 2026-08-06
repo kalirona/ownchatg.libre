@@ -51,23 +51,23 @@ const NewChatButton = memo(function NewChatButton({
   );
 
   return (
-    <TooltipAnchor
-      side="right"
-      description={tooltipDescription}
-      render={
-        <a
-          href="/c/new"
-          data-testid="new-chat-button"
-          aria-label={localize('com_ui_new_chat')}
-          aria-keyshortcuts={ariaKey}
-          className="flex w-full items-center justify-start gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-surface-hover"
-          onClick={handleClick}
-        >
-          <SquarePen className="h-5 w-5 flex-shrink-0 text-text-primary" />
-          <span className="text-sm">{localize('com_ui_new_chat')}</span>
-        </a>
-      }
-    />
+<TooltipAnchor
+          side="right"
+          description={tooltipDescription}
+          render={
+            <a
+              href="/c/new"
+              data-testid="new-chat-button"
+              aria-label={localize('com_ui_new_chat')}
+              aria-keyshortcuts={ariaKey}
+              className="flex w-full items-center justify-start gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-surface-hover"
+              onClick={handleClick}
+            >
+              <SquarePen className="h-5 w-5 flex-shrink-0 text-text-primary" />
+              <span className="text-sm text-text-primary">{localize('com_ui_new_chat')}</span>
+            </a>
+          }
+        />
   );
 });
 
@@ -181,26 +181,26 @@ function ExpandedPanel({
 
   return (
     <div className="flex h-full flex-shrink-0 flex-col gap-1 border-r border-border-light bg-surface-primary-alt px-3 py-3">
-      <TooltipAnchor
-        side="right"
-        description={toggleSidebarHint}
-        render={
-          <Button
-            id={expanded ? CLOSE_SIDEBAR_ID : undefined}
-            data-testid={expanded ? 'close-sidebar-button' : 'open-sidebar-button'}
-            size="icon"
-            variant="ghost"
-            aria-label={localize(toggleLabel)}
-            aria-expanded={expanded}
-            aria-keyshortcuts={toggleSidebarAriaKey}
-            className="flex h-9 w-full items-center justify-start gap-3 rounded-lg px-3"
-            onClick={toggleClick}
-          >
-            <Sidebar aria-hidden="true" className="h-5 w-5 flex-shrink-0 text-text-primary" />
-            <span className="text-sm">{localize(toggleLabel)}</span>
-          </Button>
-        }
-      />
+<TooltipAnchor
+          side="right"
+          description={toggleSidebarHint}
+          render={
+            <Button
+              id={expanded ? CLOSE_SIDEBAR_ID : undefined}
+              data-testid={expanded ? 'close-sidebar-button' : 'open-sidebar-button'}
+              size="icon"
+              variant="ghost"
+              aria-label={localize(toggleLabel)}
+              aria-expanded={expanded}
+              aria-keyshortcuts={toggleSidebarAriaKey}
+              className="flex h-9 w-full items-center justify-start gap-3 rounded-lg px-3"
+              onClick={toggleClick}
+            >
+              <Sidebar aria-hidden="true" className="h-5 w-5 flex-shrink-0 text-text-primary" />
+              <span className="text-sm text-text-primary">{localize(toggleLabel)}</span>
+            </Button>
+          }
+        />
       <NewChatButton setActive={setActive} />
       <div className="mx-2 border-b border-border-light" />
       <div className="flex flex-col overflow-y-auto">
