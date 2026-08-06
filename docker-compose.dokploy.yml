@@ -1,6 +1,18 @@
 # Dokploy Docker Compose deployment for ownchagpt (LibreChat)
-# In Dokploy: Project -> Docker Compose -> select this repo,
-# set Compose File to docker-compose.dokploy.yml, add the env vars below, deploy.
+#
+# IN DOKPLOY:
+#   1. Project -> Docker Compose -> select this repo, set Compose File to
+#      docker-compose.dokploy.yml.
+#   2. In the compose env tab, set every variable listed in
+#      .env.dokploy.example (DOMAIN_CLIENT, DOMAIN_SERVER, ALLOWED_ORIGINS,
+#      JWT_SECRET, JWT_REFRESH_SECRET, CREDS_KEY, CREDS_IV,
+#      MEILI_MASTER_KEY, ADMIN_PANEL_SESSION_SECRET, plus the API/DOMAIN
+#      labels below). Deploy.
+#
+# All app data (mongo, meili, uploads, images, logs, skill) lives in NAMED
+# volumes so the container (running as uid 1000 / the `node` user) always
+# gets writable, node-owned directories -- this avoids the EACCES / EAI_AGAIN
+# issues seen with root-owned bind mounts on a fresh VPS.
 
 services:
   api:
@@ -9,11 +21,14 @@ services:
       context: .
       dockerfile: Dockerfile
     image: ownchagpt-api:local
+    user: "1000:1000"
     ports:
       - "3080:3080"
     depends_on:
-      - mongodb
-      - meilisearch
+      mongodb:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
     restart: always
     mem_limit: 2g
     memswap_limit: 2g
@@ -21,6 +36,7 @@ services:
     environment:
       - HOST=0.0.0.0
       - NODE_ENV=production
+      - PORT=3080
       # Cap Node heap below the 2g container limit so it GCs instead of OOM-killing.
       - NODE_OPTIONS=--max-old-space-size=1536
       - MONGO_URI=mongodb://mongodb:27017/LibreChat
@@ -30,16 +46,20 @@ services:
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
       - CREDS_KEY=${CREDS_KEY}
       - CREDS_IV=${CREDS_IV}
-      - DOMAIN_CLIENT=${DOMAIN_CLIENT:-http://localhost}
+      - DOMAIN_CLIENT=${DOMAIN_CLIENT:-http://localhost:3080}
+      - DOMAIN_SERVER=${DOMAIN_SERVER:-http://localhost:3080}
+      # REQUIRED in production: the server exits if this is empty. Comma-separated
+      # list of browser origins that may call the API (client domain + admin panel).
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3080}
       - RAG_API_URL=http://rag_api:8000
     volumes:
-      - ./images:/app/client/public/images
-      - ./skill:/app/skill
+      - images:/app/client/public/images
+      - skill:/app/skill
       - uploads:/app/uploads
       - logs:/app/logs
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(\`${API_DOMAIN:-api.yourdomain.com}\`)"
+      - "traefik.http.routers.api.rule=Host(`${API_DOMAIN:-chat.yourdomain.com}`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls.certresolver=letsencrypt"
       - "traefik.http.services.api.loadbalancer.server.port=3080"
@@ -56,11 +76,11 @@ services:
       - PORT=3000
       - SESSION_SECRET=${ADMIN_PANEL_SESSION_SECRET}
       - API_SERVER_URL=http://api:3080
-      - VITE_API_BASE_URL=${DOMAIN_CLIENT:-http://localhost}
-      - SESSION_COOKIE_SECURE=${ADMIN_PANEL_SESSION_COOKIE_SECURE:-false}
+      - VITE_API_BASE_URL=${DOMAIN_CLIENT:-http://localhost:3080}
+      - SESSION_COOKIE_SECURE=${ADMIN_PANEL_SESSION_COOKIE_SECURE:-true}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.admin.rule=Host(\`${ADMIN_DOMAIN:-admin.yourdomain.com}\`)"
+      - "traefik.http.routers.admin.rule=Host(`${ADMIN_DOMAIN:-admin.yourdomain.com}`)"
       - "traefik.http.routers.admin.entrypoints=websecure"
       - "traefik.http.routers.admin.tls.certresolver=letsencrypt"
       - "traefik.http.services.admin.loadbalancer.server.port=3000"
@@ -71,9 +91,15 @@ services:
     restart: always
     mem_limit: 1g
     memswap_limit: 1g
+    command: mongod --noauth --wiredTigerCacheSizeGB 0.5
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
     volumes:
       - mongo-data:/data/db
-    command: mongod --noauth
 
   meilisearch:
     container_name: chat-meilisearch
@@ -85,6 +111,12 @@ services:
       - MEILI_HOST=http://meilisearch:7700
       - MEILI_NO_ANALYTICS=true
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
     volumes:
       - meili-data:/meili_data
 
@@ -97,6 +129,12 @@ services:
     restart: always
     mem_limit: 512m
     memswap_limit: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
     volumes:
       - pgdata2:/var/lib/postgresql/data
 
@@ -109,11 +147,18 @@ services:
     mem_limit: 512m
     memswap_limit: 512m
     depends_on:
-      - vectordb
+      vectordb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 10s
+      retries: 12
+      start_period: 60s
     volumes:
       - uploads:/app/uploads
-      - ./images:/app/client/public/images
-      - ./skill:/app/skill
+      - images:/app/client/public/images
+      - skill:/app/skill
 
 volumes:
   mongo-data:
@@ -121,3 +166,5 @@ volumes:
   pgdata2:
   uploads:
   logs:
+  images:
+  skill:
