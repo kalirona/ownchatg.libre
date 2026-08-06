@@ -68,7 +68,7 @@ services:
     container_name: ownchagpt-admin
     image: registry.librechat.ai/clickhouse/librechat-admin-panel:latest
     ports:
-      - "${ADMIN_PANEL_PORT:-3001}:3000"
+      - "${ADMIN_PANEL_PORT:-3041}:3000"
     depends_on:
       - api
     restart: always
