@@ -25,6 +25,12 @@ services:
       context: .
       dockerfile: Dockerfile
     image: ownchagpt-api:local
+    # CRITICAL: force Docker Compose to rebuild this image on EVERY deploy, even
+    # when "ownchagpt-api:local" already exists locally. Without this, Dokploy's
+    # redeploy reuses the previous (stale) image, so source fixes pushed to git
+    # never reach the running container — the very behavior where "the issue
+    # comes back on every redeploy". Requires Docker Compose v2.24+.
+    pull_policy: build
     user: "1000:1000"
     ports:
       - "3080:3080"
