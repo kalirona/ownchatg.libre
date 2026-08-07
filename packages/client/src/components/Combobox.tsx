@@ -86,17 +86,19 @@ export default function ComboboxComponent({
           )}
         >
           <SelectValue placeholder={selectPlaceholder}>
-            <div className="assistant-item flex items-center justify-center overflow-hidden rounded-full">
-              {SelectIcon ? SelectIcon : <ChevronDownIcon />}
+            <div className="flex items-center">
+              <div className="assistant-item flex items-center justify-center overflow-hidden rounded-full">
+                {SelectIcon ? SelectIcon : <ChevronDownIcon />}
+              </div>
+              <span
+                className="ml-2"
+                style={{ userSelect: 'none' }}
+              >
+                {selectedValue
+                  ? (displayValue ?? selectedValue)
+                  : selectPlaceholder && selectPlaceholder}
+              </span>
             </div>
-            <span
-              className={cn('ml-2', isCollapsed ? 'hidden' : '')}
-              style={{ userSelect: 'none' }}
-            >
-              {selectedValue
-                ? (displayValue ?? selectedValue)
-                : selectPlaceholder && selectPlaceholder}
-            </span>
           </SelectValue>
         </SelectTrigger>
         <RadixSelect.Portal>
