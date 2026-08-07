@@ -39,30 +39,29 @@ import WorkflowBuilder from '~/components/Workflows/WorkflowBuilder';
 import WorkflowExecutionView from '~/components/Workflows/WorkflowExecutionView';
 import WorkflowRunDetail from '~/components/Workflows/WorkflowRunDetail';
 import Root from './Root';
-import PlaceholderPage from '~/components/PlaceholderPage';
-import {
-  Clock,
-  PenTool,
-  FileText,
-  BookOpen,
-  Heart,
-  LayoutTemplate,
-  Users,
-  BarChart3,
-  Key,
-  Plug,
-  Palette,
-  SlidersHorizontal,
-  Shield,
-  Link2,
-  CreditCard,
-  Coins,
-  BookOpenCheck,
-  ListOrdered,
-  TrendingUp,
-  Settings,
-  ScrollText,
-} from 'lucide-react';
+import RecentActivityPage from '~/components/Pages/RecentActivityPage';
+import AIWriterPage from '~/components/Pages/AIWriterPage';
+import DocumentsPage from '~/components/Pages/DocumentsPage';
+import CollectionsPage from '~/components/Pages/CollectionsPage';
+import KnowledgeDocumentsPage from '~/components/Pages/KnowledgeDocumentsPage';
+import FavoritesPage from '~/components/Pages/FavoritesPage';
+import TemplatesPage from '~/components/Pages/TemplatesPage';
+import MembersPage from '~/components/Pages/MembersPage';
+import UsagePage from '~/components/Pages/UsagePage';
+import ApiKeysPage from '~/components/Pages/ApiKeysPage';
+import MCPPage from '~/components/Pages/MCPPage';
+import AppearancePage from '~/components/Pages/AppearancePage';
+import AIPreferencesPage from '~/components/Pages/AIPreferencesPage';
+import SecurityPage from '~/components/Pages/SecurityPage';
+import ConnectedAccountsPage from '~/components/Pages/ConnectedAccountsPage';
+import AdminUsersPage from '~/components/Pages/admin/AdminUsersPage';
+import AdminPlansPage from '~/components/Pages/admin/AdminPlansPage';
+import AdminCreditsPage from '~/components/Pages/admin/AdminCreditsPage';
+import AdminKnowledgePage from '~/components/Pages/admin/AdminKnowledgePage';
+import AdminQueuesPage from '~/components/Pages/admin/AdminQueuesPage';
+import AdminAnalyticsPage from '~/components/Pages/admin/AdminAnalyticsPage';
+import AdminSystemPage from '~/components/Pages/admin/AdminSystemPage';
+import AdminLogsPage from '~/components/Pages/admin/AdminLogsPage';
 /* Marketing pages */
 import MarketingLayout from '~/components/Marketing/MarketingLayout';
 import HomePage from '~/components/Marketing/pages/HomePage';
@@ -351,95 +350,95 @@ export const router = createBrowserRouter(
             },
             {
               path: 'recent-activity',
-              element: <PlaceholderPage icon={Clock} title="Recent Activity" description="Your recent conversations and actions." />,
+              element: <RecentActivityPage />,
             },
             {
               path: 'ai-writer',
-              element: <PlaceholderPage icon={PenTool} title="AI Writer" description="Write articles, stories, and more with AI." />,
+              element: <AIWriterPage />,
             },
             {
               path: 'documents',
-              element: <PlaceholderPage icon={FileText} title="Documents" description="Create and manage documents." />,
+              element: <DocumentsPage />,
             },
             {
               path: 'knowledge/collections',
-              element: <PlaceholderPage icon={BookOpen} title="Collections" description="Organize your knowledge into collections." />,
+              element: <CollectionsPage />,
             },
             {
               path: 'knowledge/documents',
-              element: <PlaceholderPage icon={FileText} title="Knowledge Documents" description="Documents in your knowledge base." />,
+              element: <KnowledgeDocumentsPage />,
             },
             {
               path: 'favorites',
-              element: <PlaceholderPage icon={Heart} title="Favorites" description="Your favorite prompts and conversations." />,
+              element: <FavoritesPage />,
             },
             {
               path: 'templates',
-              element: <PlaceholderPage icon={LayoutTemplate} title="Templates" description="Reusable templates for prompts and agents." />,
+              element: <TemplatesPage />,
             },
             {
               path: 'members',
-              element: <PlaceholderPage icon={Users} title="Members" description="Manage your team members." />,
+              element: <MembersPage />,
             },
             {
               path: 'usage',
-              element: <PlaceholderPage icon={BarChart3} title="Usage" description="Track your token usage and costs." />,
+              element: <UsagePage />,
             },
             {
               path: 'api-keys',
-              element: <PlaceholderPage icon={Key} title="API Keys" description="Manage your API keys." />,
+              element: <ApiKeysPage />,
             },
             {
               path: 'mcp',
-              element: <PlaceholderPage icon={Plug} title="MCP" description="Model Context Protocol integrations." />,
+              element: <MCPPage />,
             },
             {
               path: 'settings/appearance',
-              element: <PlaceholderPage icon={Palette} title="Appearance" description="Customize the look and feel." />,
+              element: <AppearancePage />,
             },
             {
               path: 'settings/ai',
-              element: <PlaceholderPage icon={SlidersHorizontal} title="AI Preferences" description="Configure AI model preferences." />,
+              element: <AIPreferencesPage />,
             },
             {
               path: 'settings/security',
-              element: <PlaceholderPage icon={Shield} title="Security" description="Manage your security settings." />,
+              element: <SecurityPage />,
             },
             {
               path: 'settings/connected-accounts',
-              element: <PlaceholderPage icon={Link2} title="Connected Accounts" description="Manage connected accounts." />,
+              element: <ConnectedAccountsPage />,
             },
             {
               path: 'admin/users',
-              element: <PlaceholderPage icon={Users} title="User Management" description="Manage platform users." />,
+              element: <AdminUsersPage />,
             },
             {
               path: 'admin/plans',
-              element: <PlaceholderPage icon={CreditCard} title="Plans" description="Manage subscription plans." />,
+              element: <AdminPlansPage />,
             },
             {
               path: 'admin/credits',
-              element: <PlaceholderPage icon={Coins} title="Credits" description="Manage credit packages." />,
+              element: <AdminCreditsPage />,
             },
             {
               path: 'admin/knowledge',
-              element: <PlaceholderPage icon={BookOpenCheck} title="Knowledge Settings" description="Configure knowledge base settings." />,
+              element: <AdminKnowledgePage />,
             },
             {
               path: 'admin/queues',
-              element: <PlaceholderPage icon={ListOrdered} title="Queues" description="Monitor job queues." />,
+              element: <AdminQueuesPage />,
             },
             {
               path: 'admin/analytics',
-              element: <PlaceholderPage icon={TrendingUp} title="Analytics" description="Platform analytics and insights." />,
+              element: <AdminAnalyticsPage />,
             },
             {
               path: 'admin/system',
-              element: <PlaceholderPage icon={Settings} title="System" description="System configuration and health." />,
+              element: <AdminSystemPage />,
             },
             {
               path: 'admin/logs',
-              element: <PlaceholderPage icon={ScrollText} title="Logs" description="System logs and audit trail." />,
+              element: <AdminLogsPage />,
             },
           ],
         },
