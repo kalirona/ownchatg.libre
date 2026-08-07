@@ -13,6 +13,9 @@ endpoints:
       headers:
         x-librechat-body-parentmessageid: '{{LIBRECHAT_BODY_PARENTMESSAGEID}}'
       models:
+        default:
+          - 'openai/gpt-4o-mini'
+          - 'meta-llama/llama-3.1-8b-instruct'
         fetch: true
       titleConvo: true
       dropParams: ['stop']
