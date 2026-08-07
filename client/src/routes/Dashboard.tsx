@@ -1,5 +1,8 @@
 import { Navigate, useParams } from 'react-router-dom';
 import DashboardRoute from './Layouts/Dashboard';
+import FileDashboardView from '~/components/Files/FileDashboardView';
+import VectorStoreView from '~/components/Files/VectorStoreView';
+import FilesListView from '~/components/Files/FilesListView';
 
 function PromptsRedirect() {
   const { '*': splat } = useParams();
@@ -14,6 +17,22 @@ const dashboardRoutes = {
     {
       path: 'prompts/*',
       element: <PromptsRedirect />,
+    },
+    {
+      path: 'vector-stores',
+      element: <VectorStoreView />,
+    },
+    {
+      path: 'vector-stores/:vectorStoreId',
+      element: <VectorStoreView />,
+    },
+    {
+      path: 'files',
+      element: <FilesListView />,
+    },
+    {
+      path: 'files/:fileId',
+      element: <FilesListView />,
     },
     {
       path: '*',
