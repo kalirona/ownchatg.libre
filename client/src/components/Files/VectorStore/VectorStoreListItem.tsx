@@ -18,7 +18,7 @@ export default function VectorStoreListItem({
   return (
     <div
       onClick={() => {
-        navigate('vs_id_abcdef');
+        navigate(`/d/vector-stores/${vectorStore._id}`);
       }}
       className="w-100 mt-2 flex cursor-pointer flex-row justify-around rounded-md border border-0 bg-white p-4 transition duration-300 ease-in-out hover:bg-slate-200"
     >

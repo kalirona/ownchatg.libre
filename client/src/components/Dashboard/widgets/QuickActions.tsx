@@ -33,7 +33,7 @@ const actions: QuickAction[] = [
     id: 'files',
     labelKey: 'com_sidepanel_attach_files',
     emoji: '📁',
-    path: undefined,
+    path: '/d/files',
   },
 ];
 

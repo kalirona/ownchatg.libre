@@ -250,7 +250,6 @@ const AttachFileMenu = ({
       });
       localItems.push({
         label: localize('com_files_upload_sharepoint'),
-        onClick: () => {},
         icon: <SharePointIcon className="icon-md" />,
         subItems: sharePointItems,
       });
