@@ -63,6 +63,10 @@ services:
       # list of browser origins that may call the API (client domain + admin panel).
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://chat.sitenexai.com, https://admin.sitenexai.com}
       - ALLOW_REGISTRATION=true
+      # Custom config with the OpenRouter endpoint (see librechat.dokploy.yaml).
+      # OPENROUTER_KEY is the OpenRouter API key (sk-or-v1-...), set in Dokploy.
+      - CONFIG_PATH=/app/librechat.dokploy.yaml
+      - OPENROUTER_KEY=${OPENROUTER_KEY}
     # Healthcheck: wait for the API to be ready before Traefik routes traffic.
     # Uses Node's built-in fetch (node:alpine ships NO curl), with retry to
     # avoid "Bad Gateway" on startup.
