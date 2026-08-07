@@ -81,13 +81,9 @@ services:
       - skill:/app/skill
       - uploads:/app/uploads
       - logs:/app/logs
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=dokploy-network"
-      - "traefik.http.routers.app.rule=Host(`${API_DOMAIN:-chat.sitenexai.com}`)"
-      - "traefik.http.routers.app.entrypoints=websecure"
-      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-      - "traefik.http.services.app.loadbalancer.server.port=3080"
+    # NOTE: Routing is managed in the Dokploy UI (Domains tab), NOT via compose
+    # labels, so the chat domain must point to THIS (api) service on port 3080.
+    # A second labels block here would conflict with Dokploy's own Traefik labels.
 
   admin-panel:
     container_name: ownchagpt-admin
@@ -106,13 +102,7 @@ services:
       - API_SERVER_URL=http://api:3080
       - VITE_API_BASE_URL=${DOMAIN_CLIENT:-https://chat.sitenexai.com}
       - SESSION_COOKIE_SECURE=${ADMIN_PANEL_SESSION_COOKIE_SECURE:-true}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=dokploy-network"
-      - "traefik.http.routers.admin-panel.rule=Host(`${ADMIN_DOMAIN:-admin.sitenexai.com}`)"
-      - "traefik.http.routers.admin-panel.entrypoints=websecure"
-      - "traefik.http.routers.admin-panel.tls.certresolver=letsencrypt"
-      - "traefik.http.services.admin-panel.loadbalancer.server.port=3000"
+    # NOTE: admin panel routing also managed via Dokploy UI Domains tab.
 
   meilisearch:
     container_name: chat-meilisearch
