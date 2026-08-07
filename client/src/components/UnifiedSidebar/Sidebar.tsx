@@ -26,6 +26,7 @@ function Sidebar({
         <ExpandedPanel
           links={links}
           expanded={expanded}
+          compact={expanded && showSecondaryPanel}
           onCollapse={onCollapse}
           onExpand={onExpand}
         />

@@ -24,8 +24,10 @@ const AccountSettings = lazy(() => import('~/components/Nav/AccountSettings'));
 
 const NewChatButton = memo(function NewChatButton({
   setActive,
+  compact = false,
 }: {
   setActive: (id: string) => void;
+  compact?: boolean;
 }) {
   const localize = useLocalize();
   const queryClient = useQueryClient();
@@ -60,11 +62,15 @@ const NewChatButton = memo(function NewChatButton({
               data-testid="new-chat-button"
               aria-label={localize('com_ui_new_chat')}
               aria-keyshortcuts={ariaKey}
-              className="flex w-full items-center justify-start gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-surface-hover"
+              className={
+                compact
+                  ? 'flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-surface-hover'
+                  : 'flex w-full items-center justify-start gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-surface-hover'
+              }
               onClick={handleClick}
             >
               <SquarePen className="h-5 w-5 flex-shrink-0 text-text-primary" />
-              <span className="text-sm text-text-primary">{localize('com_ui_new_chat')}</span>
+              {!compact && <span className="text-sm text-text-primary">{localize('com_ui_new_chat')}</span>}
             </a>
           }
         />
@@ -78,6 +84,7 @@ const NavIconButton = memo(function NavIconButton({
   setActive,
   onExpand,
   onCollapse,
+  compact = false,
 }: {
   link: NavLink;
   isActive: boolean;
@@ -85,6 +92,7 @@ const NavIconButton = memo(function NavIconButton({
   setActive: (id: string) => void;
   onExpand?: () => void;
   onCollapse?: () => void;
+  compact?: boolean;
 }) {
   const localize = useLocalize();
 
@@ -121,7 +129,8 @@ const NavIconButton = memo(function NavIconButton({
           aria-pressed={isActive}
           data-testid={`nav-panel-${link.id}`}
           className={cn(
-            'flex h-9 w-full items-center justify-start gap-3 rounded-lg px-3 border-l-2',
+            'flex h-9 w-full items-center rounded-lg border-l-2',
+            compact ? 'justify-center px-0' : 'justify-start gap-3 px-3',
             isActive
               ? 'border-accent bg-surface-active-alt text-text-primary'
               : 'border-transparent text-text-secondary',
@@ -129,7 +138,7 @@ const NavIconButton = memo(function NavIconButton({
           onClick={handleClick}
         >
           <link.icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-          <span className="text-sm">{localize(link.title)}</span>
+          {!compact && <span className="text-sm">{localize(link.title)}</span>}
         </Button>
       }
     />
@@ -141,11 +150,13 @@ function ExpandedPanel({
   expanded = true,
   onCollapse,
   onExpand,
+  compact = false,
 }: {
   links: NavLink[];
   expanded?: boolean;
   onCollapse?: () => void;
   onExpand?: () => void;
+  compact?: boolean;
 }) {
   const localize = useLocalize();
   const { active, setActive } = useActivePanel();
@@ -180,33 +191,42 @@ function ExpandedPanel({
   }, [links]);
 
   return (
-    <div className="flex h-full flex-shrink-0 flex-col gap-1 border-r border-border-light bg-surface-primary-alt px-3 py-3">
-<TooltipAnchor
-          side="right"
-          description={toggleSidebarHint}
-          render={
-            <Button
-              id={expanded ? CLOSE_SIDEBAR_ID : undefined}
-              data-testid={expanded ? 'close-sidebar-button' : 'open-sidebar-button'}
-              size="icon"
-              variant="ghost"
-              aria-label={localize(toggleLabel)}
-              aria-expanded={expanded}
-              aria-keyshortcuts={toggleSidebarAriaKey}
-              className="flex h-9 w-full items-center justify-start gap-3 rounded-lg px-3"
-              onClick={toggleClick}
-            >
-              <Sidebar aria-hidden="true" className="h-5 w-5 flex-shrink-0 text-text-primary" />
-              <span className="text-sm text-text-primary">{localize(toggleLabel)}</span>
-            </Button>
-          }
-        />
-      <NewChatButton setActive={setActive} />
-      <div className="mx-2 border-b border-border-light" />
+    <div
+      className={cn(
+        'flex h-full flex-shrink-0 flex-col gap-1 border-r border-border-light bg-surface-primary-alt py-3',
+        compact ? 'w-12 px-1' : 'px-3',
+      )}
+    >
+      <TooltipAnchor
+        side="right"
+        description={toggleSidebarHint}
+        render={
+          <Button
+            id={expanded ? CLOSE_SIDEBAR_ID : undefined}
+            data-testid={expanded ? 'close-sidebar-button' : 'open-sidebar-button'}
+            size="icon"
+            variant="ghost"
+            aria-label={localize(toggleLabel)}
+            aria-expanded={expanded}
+            aria-keyshortcuts={toggleSidebarAriaKey}
+            className={
+              compact
+                ? 'flex h-9 w-full items-center justify-center rounded-lg'
+                : 'flex h-9 w-full items-center justify-start gap-3 rounded-lg px-3'
+            }
+            onClick={toggleClick}
+          >
+            <Sidebar aria-hidden="true" className="h-5 w-5 flex-shrink-0 text-text-primary" />
+            {!compact && <span className="text-sm text-text-primary">{localize(toggleLabel)}</span>}
+          </Button>
+        }
+      />
+      <NewChatButton setActive={setActive} compact={compact} />
+      <div className={cn('border-b border-border-light', compact ? 'mx-1' : 'mx-2')} />
       <div className="flex flex-col overflow-y-auto">
         {sectionedLinks.map((group, groupIdx) => (
           <div key={group.section ?? `unsectioned-${groupIdx}`} className="flex flex-col">
-            {group.section && groupIdx > 0 && (
+            {group.section && groupIdx > 0 && !compact && (
               <div className="px-3 py-1">
                 <span className="text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {localize(SECTION_LABELS[group.section])}
@@ -223,6 +243,7 @@ function ExpandedPanel({
                   setActive={setActive}
                   onExpand={onExpand}
                   onCollapse={onCollapse}
+                  compact={compact}
                 />
               ))}
             </div>
@@ -232,7 +253,7 @@ function ExpandedPanel({
 
       <div className="mt-auto">
         <Suspense fallback={<Skeleton className="h-9 w-full rounded-lg" />}>
-          <AccountSettings />
+          <AccountSettings collapsed={compact} />
         </Suspense>
       </div>
     </div>
