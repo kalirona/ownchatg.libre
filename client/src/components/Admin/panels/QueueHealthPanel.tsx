@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   Cpu, Activity, Database, Clock, AlertTriangle, CheckCircle2,
-  Loader2, Ban, RefreshCw,
+  Loader2, Ban, RefreshCw, Wifi, WifiOff, Pause,
 } from 'lucide-react';
 import { useGetKnowledgeAdminQueueStatus } from '~/data-provider';
 
@@ -105,8 +105,6 @@ export default function QueueHealthPanel() {
             </div>
           </div>
         ))}
-      </div>
-
       </div>
     </div>
   );
