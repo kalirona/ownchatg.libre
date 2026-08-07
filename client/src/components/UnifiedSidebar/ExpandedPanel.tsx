@@ -14,10 +14,16 @@ import { clearMessagesCache, cn } from '~/utils';
 import store from '~/store';
 
 const SECTION_LABELS: Record<NavSection, string> = {
-  workspace: 'com_ui_workspace',
-  'ai-tools': 'com_ui_ai_tools',
-  library: 'com_ui_library',
-  account: 'com_ui_account',
+  workspace: 'Workspace',
+  create: 'Create',
+  ai: 'AI',
+  knowledge: 'Knowledge',
+  library: 'Library',
+  marketplace: 'Marketplace',
+  team: 'Team',
+  integrations: 'Integrations',
+  settings: 'Settings',
+  admin: 'Admin',
 };
 
 const AccountSettings = lazy(() => import('~/components/Nav/AccountSettings'));
@@ -229,7 +235,7 @@ function ExpandedPanel({
             {group.section && groupIdx > 0 && !compact && (
               <div className="px-3 py-1">
                 <span className="text-xs font-medium uppercase tracking-wider text-text-secondary">
-                  {localize(SECTION_LABELS[group.section])}
+                  {SECTION_LABELS[group.section]}
                 </span>
               </div>
             )}

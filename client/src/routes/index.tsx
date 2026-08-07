@@ -39,6 +39,30 @@ import WorkflowBuilder from '~/components/Workflows/WorkflowBuilder';
 import WorkflowExecutionView from '~/components/Workflows/WorkflowExecutionView';
 import WorkflowRunDetail from '~/components/Workflows/WorkflowRunDetail';
 import Root from './Root';
+import PlaceholderPage from '~/components/PlaceholderPage';
+import {
+  Clock,
+  PenTool,
+  FileText,
+  BookOpen,
+  Heart,
+  LayoutTemplate,
+  Users,
+  BarChart3,
+  Key,
+  Plug,
+  Palette,
+  SlidersHorizontal,
+  Shield,
+  Link2,
+  CreditCard,
+  Coins,
+  BookOpenCheck,
+  ListOrdered,
+  TrendingUp,
+  Settings,
+  ScrollText,
+} from 'lucide-react';
 /* Marketing pages */
 import MarketingLayout from '~/components/Marketing/MarketingLayout';
 import HomePage from '~/components/Marketing/pages/HomePage';
@@ -324,6 +348,98 @@ export const router = createBrowserRouter(
             {
               path: 'workflows/:id/runs/:runId',
               element: <WorkflowRunDetail />,
+            },
+            {
+              path: 'recent-activity',
+              element: <PlaceholderPage icon={Clock} title="Recent Activity" description="Your recent conversations and actions." />,
+            },
+            {
+              path: 'ai-writer',
+              element: <PlaceholderPage icon={PenTool} title="AI Writer" description="Write articles, stories, and more with AI." />,
+            },
+            {
+              path: 'documents',
+              element: <PlaceholderPage icon={FileText} title="Documents" description="Create and manage documents." />,
+            },
+            {
+              path: 'knowledge/collections',
+              element: <PlaceholderPage icon={BookOpen} title="Collections" description="Organize your knowledge into collections." />,
+            },
+            {
+              path: 'knowledge/documents',
+              element: <PlaceholderPage icon={FileText} title="Knowledge Documents" description="Documents in your knowledge base." />,
+            },
+            {
+              path: 'favorites',
+              element: <PlaceholderPage icon={Heart} title="Favorites" description="Your favorite prompts and conversations." />,
+            },
+            {
+              path: 'templates',
+              element: <PlaceholderPage icon={LayoutTemplate} title="Templates" description="Reusable templates for prompts and agents." />,
+            },
+            {
+              path: 'members',
+              element: <PlaceholderPage icon={Users} title="Members" description="Manage your team members." />,
+            },
+            {
+              path: 'usage',
+              element: <PlaceholderPage icon={BarChart3} title="Usage" description="Track your token usage and costs." />,
+            },
+            {
+              path: 'api-keys',
+              element: <PlaceholderPage icon={Key} title="API Keys" description="Manage your API keys." />,
+            },
+            {
+              path: 'mcp',
+              element: <PlaceholderPage icon={Plug} title="MCP" description="Model Context Protocol integrations." />,
+            },
+            {
+              path: 'settings/appearance',
+              element: <PlaceholderPage icon={Palette} title="Appearance" description="Customize the look and feel." />,
+            },
+            {
+              path: 'settings/ai',
+              element: <PlaceholderPage icon={SlidersHorizontal} title="AI Preferences" description="Configure AI model preferences." />,
+            },
+            {
+              path: 'settings/security',
+              element: <PlaceholderPage icon={Shield} title="Security" description="Manage your security settings." />,
+            },
+            {
+              path: 'settings/connected-accounts',
+              element: <PlaceholderPage icon={Link2} title="Connected Accounts" description="Manage connected accounts." />,
+            },
+            {
+              path: 'admin/users',
+              element: <PlaceholderPage icon={Users} title="User Management" description="Manage platform users." />,
+            },
+            {
+              path: 'admin/plans',
+              element: <PlaceholderPage icon={CreditCard} title="Plans" description="Manage subscription plans." />,
+            },
+            {
+              path: 'admin/credits',
+              element: <PlaceholderPage icon={Coins} title="Credits" description="Manage credit packages." />,
+            },
+            {
+              path: 'admin/knowledge',
+              element: <PlaceholderPage icon={BookOpenCheck} title="Knowledge Settings" description="Configure knowledge base settings." />,
+            },
+            {
+              path: 'admin/queues',
+              element: <PlaceholderPage icon={ListOrdered} title="Queues" description="Monitor job queues." />,
+            },
+            {
+              path: 'admin/analytics',
+              element: <PlaceholderPage icon={TrendingUp} title="Analytics" description="Platform analytics and insights." />,
+            },
+            {
+              path: 'admin/system',
+              element: <PlaceholderPage icon={Settings} title="System" description="System configuration and health." />,
+            },
+            {
+              path: 'admin/logs',
+              element: <PlaceholderPage icon={ScrollText} title="Logs" description="System logs and audit trail." />,
             },
           ],
         },

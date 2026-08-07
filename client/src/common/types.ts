@@ -124,7 +124,18 @@ export type IconsRecord = {
 
 export type AgentIconMapProps = IconMapProps & { agentName?: string };
 
-export const NAV_SECTIONS = ['workspace', 'ai-tools', 'library', 'account'] as const;
+export const NAV_SECTIONS = [
+  'workspace',
+  'create',
+  'ai',
+  'knowledge',
+  'library',
+  'marketplace',
+  'team',
+  'integrations',
+  'settings',
+  'admin',
+] as const;
 export type NavSection = (typeof NAV_SECTIONS)[number];
 
 export type NavLink = {
